@@ -13,4 +13,6 @@
 
 # Exclude coverage file
 coverage.txt
-vendor/
+vendor
+
+.go/
