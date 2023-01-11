@@ -22,6 +22,10 @@ debug:
 	go build -tags 'debug' $(LDFLAGS) -o $(BINPATH)/dp-topic-api
 	HUMAN_LOG=1 DEBUG=1 $(BINPATH)/dp-topic-api
 
+.PHONY: debug-run
+debug-run:
+	HUMAN_LOG=1 DEBUG=1 go run -tags 'debug' $(LDFLAGS) main.go
+
 .PHONY: lint-local
 lint-local:
 	go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.50.1
