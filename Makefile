@@ -31,13 +31,13 @@ lint-local:
 	go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.50.1
 	golangci-lint run ./...
 
-.PHONY: generate-prod
-generate-prod:
+.PHONY: lint
+lint:
 	go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.50.1
 	golangci-lint run ./...
 
-.PHONY: test-prod
-test-prod:
+.PHONY: test
+test:
 	go test -race -cover -tags 'production' ./...
 
 .PHONY: test-component
