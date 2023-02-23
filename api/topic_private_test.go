@@ -1,6 +1,7 @@
 package api
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -255,6 +256,123 @@ func TestGetTopicsListPrivateHandler(t *testing.T) {
 					So(retTopic.ID, ShouldEqual, "1")
 					So(retTopic.Next.ID, ShouldEqual, "1")
 				})
+			})
+		})
+	})
+}
+
+func TestPutTopicsPrivateHandler(t *testing.T) {
+	Convey("Given a topic API in web mode (private endpoints enabled)", t, func() {
+		cfg, err := config.Get()
+		So(err, ShouldBeNil)
+		cfg.EnablePrivateEndpoints = true
+		topicUpdatePayload := `{ "title": "New title", "description": "New Description", "subtopics_id": ["1"], "keywords": ["keyword_1"], "state": "published", "release_date": "2022-10-10T08:30:00Z"}`
+
+		Convey("And a topic API with mongoDB returning 'next' and 'current' topics", func() {
+			mongoDBMock := &storeMock.MongoDBMock{
+				CheckTopicExistsFunc: func(ctx context.Context, id string) error {
+					return nil
+				},
+				UpdateTopicDataFunc: func(context.Context, string, *models.TopicUpdate) error {
+					return nil
+				},
+				GetTopicFunc: func(ctx context.Context, id string) (*models.TopicResponse, error) {
+					switch id {
+					case "2":
+						return dbTopic2(models.StatePublished), nil
+					case "3":
+						return dbTopic3(models.StatePublished), nil
+					case topicRoot:
+						return dbTopic1(models.StatePublished), nil
+					default:
+						return nil, apierrors.ErrTopicNotFound
+					}
+				},
+				UpdateTopicFunc: func(context.Context, string, *models.TopicResponse) error {
+					return nil
+				},
+			}
+
+			topicAPI := GetAPIWithMocks(cfg, mongoDBMock)
+
+			Convey("When an update is requested to a topic", func() {
+				topicID := "2"
+
+				request, err := createRequestWithAuth(http.MethodPut, "http://localhost:25300/topics/"+topicID, bytes.NewBufferString(topicUpdatePayload))
+
+				So(err, ShouldBeNil)
+
+				w := httptest.NewRecorder()
+				topicAPI.Router.ServeHTTP(w, request)
+
+				Convey("Then the response should be a 200 and the database should be called", func() {
+					So(w.Code, ShouldEqual, http.StatusOK)
+					So(err, ShouldBeNil)
+					So(mongoDBMock.UpdateTopicDataCalls(), ShouldHaveLength, 1)
+				})
+			})
+
+			Convey("When an update is requested to a topic with malformed JSON", func() {
+				topicID := "2"
+				topicUpdateBadPayload := `{`
+
+				request, err := createRequestWithAuth(http.MethodPut, "http://localhost:25300/topics/"+topicID, bytes.NewBufferString(topicUpdateBadPayload))
+
+				So(err, ShouldBeNil)
+
+				w := httptest.NewRecorder()
+				topicAPI.Router.ServeHTTP(w, request)
+				Convey("Then the response should be a 500 and the database should not be called", func() {
+					So(w.Code, ShouldEqual, http.StatusInternalServerError)
+					So(w.Body.String(), ShouldContainSubstring, apierrors.ErrInternalServer.Error())
+					So(len(mongoDBMock.UpdateTopicDataCalls()), ShouldEqual, 0)
+				})
+			})
+
+			Convey("When an update is requested to a topic missing required fields", func() {
+				topicID := "2"
+				topicUpdatePayloadMissingFields := `{ "title": "", "description": "", "subtopics_id": ["1"], "keywords": ["keyword_1"], "state": "", "release_date": "2022-10-10T08:30:00Z"}`
+
+				request, err := createRequestWithAuth(http.MethodPut, "http://localhost:25300/topics/"+topicID, bytes.NewBufferString(topicUpdatePayloadMissingFields))
+
+				So(err, ShouldBeNil)
+
+				w := httptest.NewRecorder()
+				topicAPI.Router.ServeHTTP(w, request)
+				Convey("Then the response should be a 400 and the database should not be called", func() {
+					So(w.Code, ShouldEqual, http.StatusBadRequest)
+					So(w.Body.String(), ShouldContainSubstring, apierrors.ErrTopicMissingFields.Error())
+					So(len(mongoDBMock.UpdateTopicDataCalls()), ShouldEqual, 0)
+				})
+			})
+		})
+
+		Convey("And a topic API which can't find topics", func() {
+			mongoDBMock := &storeMock.MongoDBMock{
+				CheckTopicExistsFunc: func(ctx context.Context, id string) error {
+					return apierrors.ErrTopicNotFound
+				},
+				UpdateTopicDataFunc: func(context.Context, string, *models.TopicUpdate) error {
+					return nil
+				},
+			}
+
+			topicAPI := GetAPIWithMocks(cfg, mongoDBMock)
+
+			Convey("When the topic document cannot be found return status not found ", func() {
+				topicID := "4"
+				request, err := createRequestWithAuth(http.MethodPut, "http://localhost:25300/topics/"+topicID, bytes.NewBufferString(topicUpdatePayload))
+
+				So(err, ShouldBeNil)
+
+				w := httptest.NewRecorder()
+				topicAPI.Router.ServeHTTP(w, request)
+
+				So(w.Code, ShouldEqual, http.StatusNotFound)
+
+				So(w.Body.String(), ShouldContainSubstring, apierrors.ErrTopicNotFound.Error())
+
+				So(len(mongoDBMock.UpdateTopicDataCalls()), ShouldEqual, 0)
 			})
 		})
 	})

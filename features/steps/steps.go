@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/ONSdigital/dp-topic-api/config"
+	"github.com/stretchr/testify/assert"
 
 	dpMongoDriver "github.com/ONSdigital/dp-mongodb/v3/mongodb"
 
@@ -84,4 +85,26 @@ func (f *TopicComponent) putContentInDatabase(ctx context.Context, mongoCollecti
 func (f *TopicComponent) privateEndpointsAreEnabled() error {
 	f.Config.EnablePrivateEndpoints = true
 	return nil
+}
+
+func (f *TopicComponent) theDocumentInTheDatabaseForIDShouldBe(documentID string, documentJSON *godog.DocString) error {
+	var expectedTopic models.Topic
+
+	if err := json.Unmarshal([]byte(documentJSON.Content), &expectedTopic); err != nil {
+		return err
+	}
+
+	collectionName := f.MongoClient.ActualCollectionName(config.TopicsCollection)
+	var link models.TopicResponse
+	if err := f.MongoClient.Connection.Collection(collectionName).FindOne(context.Background(), bson.M{"_id": documentID}, &link); err != nil {
+		return err
+	}
+
+	assert.Equal(&f.ErrorFeature, documentID, link.ID)
+
+	document := link.Next
+
+	assert.Equal(&f.ErrorFeature, expectedTopic, *document)
+
+	return f.ErrorFeature.StepError()
 }

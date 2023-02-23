@@ -10,6 +10,7 @@ import (
 	errs "github.com/ONSdigital/dp-topic-api/apierrors"
 	"github.com/ONSdigital/dp-topic-api/config"
 	"github.com/ONSdigital/dp-topic-api/models"
+	"github.com/ONSdigital/log.go/v2/log"
 
 	mongohealth "github.com/ONSdigital/dp-mongodb/v3/health"
 	mongodriver "github.com/ONSdigital/dp-mongodb/v3/mongodb"
@@ -210,4 +211,51 @@ func (m *Mongo) UpdateTopic(ctx context.Context, id string, topic *models.TopicR
 	}
 
 	return nil
+}
+
+// UpdateTopicData updates the next instance with new values.
+func (m *Mongo) UpdateTopicData(ctx context.Context, id string, topic *models.TopicUpdate) error {
+	selector := bson.M{"id": id}
+	updates, err := createTopicUpdateQuery(ctx, id, topic)
+	if err != nil {
+		return err
+	}
+
+	update := bson.M{"$set": updates, "$setOnInsert": bson.M{"next.last_updated": time.Now()}}
+
+	result, err := m.Connection.Collection(m.ActualCollectionName(config.TopicsCollection)).Update(ctx, selector, update)
+	if err != nil {
+		return err
+	}
+
+	if result.MatchedCount == 0 {
+		return errs.ErrTopicNotFound
+	}
+
+	return nil
+}
+
+// Create TopicUpdateQuery builds the bson for the insert.
+func createTopicUpdateQuery(ctx context.Context, id string, topic *models.TopicUpdate) (bson.M, error) {
+	updates := make(bson.M)
+
+	log.Info(ctx, "building update query for topic resource", log.Data{"topic_id": id, "topic": topic, "updates": updates})
+
+	updates["next.title"] = topic.Title
+	updates["next.description"] = topic.Description
+	updates["next.keywords"] = topic.Keywords
+	updates["next.subtopics_ids"] = topic.SubtopicIds
+	updates["next.state"] = topic.State
+
+	if topic.ReleaseDate != "" {
+		releaseDate, err := time.Parse(time.RFC3339, topic.ReleaseDate)
+		if err != nil {
+			return nil, errs.ErrInvalidReleaseDate
+		}
+		updates["next.release_date"] = releaseDate
+	}
+
+	log.Info(ctx, "built update query for topic resource", log.Data{"topic_id": id, "topic": topic, "updates": updates})
+
+	return updates, nil
 }

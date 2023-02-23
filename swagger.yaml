@@ -45,6 +45,12 @@ parameters:
     required: true
     schema:
       $ref: "#/definitions/TopicRelease"
+  topic_update:
+    name: topic_update
+    in: body
+    required: true
+    schema:
+      $ref: "#/definitions/TopicUpdate"
 paths:
   /topics/{id}:
     get:
@@ -63,6 +69,25 @@ paths:
             $ref: '#/definitions/Topic'
         404:
           description: "Topic not found"
+        500:
+          $ref: '#/responses/InternalError'
+    put:
+      tags:
+        - "Private"
+      summary: "Update the topic details"
+      description: "Updates topics details for the next nested object"
+      parameters:
+        - $ref: '#/parameters/id'
+        - $ref: '#/parameters/topic_update'
+      responses:
+        200:
+          description: "Success"
+        401:
+          $ref: '#/responses/Unauthorised'
+        404:
+          description: "Topic not found"
+        400:
+          description: "Invalid topic details"
         500:
           $ref: '#/responses/InternalError'
   /topics/{id}/release-date:
@@ -107,7 +132,7 @@ paths:
         400:
           description: "topic state is not a valid state name"
         500:
-          $ref: '#/responses/InternalError'
+          $ref: '#/responses/InternalError' 
   /topics/{id}/subtopics:
     get:
       tags:
@@ -167,6 +192,7 @@ paths:
           headers:
             Cache-Control:
               default:  "public, max-age=1800"
+              type: string
         500:
           $ref: '#/responses/InternalError'
 responses:
@@ -345,6 +371,39 @@ definitions:
         description: "The release date formatted to abide by RFC3339"
         type: string
         example: "2022-10-10T08:30:00Z"
+  TopicUpdate:
+    type: object
+    description: "Object containing topic data update"
+    required: 
+      - title
+      - description
+      - release_date
+      - state
+    properties:
+      title:
+        description: "The title of a topic"
+        type: string
+        example: "Business, Industry and Trade"
+      description:
+        description: "The description of a topic"
+        type: string 
+        example: "Lots of information about business"
+      release_date:
+        description: "The release date formatted to abide by RFC3339"
+        type: string
+        example: "2022-10-10T08:30:00Z"
+      keywords:
+        type: array
+        items:
+          type: string
+        description: "List of keywords that relate to the topic"
+      state:
+        $ref: '#/definitions/State'
+      subtopics_ids:
+        type: array
+        items:
+          type: string
+        description: "Array of subtopic ids"
   ListOfNavigationItems:
     type: array
     description: "A list of navigation items"

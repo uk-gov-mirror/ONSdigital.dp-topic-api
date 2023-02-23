@@ -101,6 +101,7 @@ func (f *TopicComponent) RegisterSteps(ctx *godog.ScenarioContext) {
 	ctx.Step(`^private endpoints are enabled$`, f.privateEndpointsAreEnabled)
 	ctx.Step(`^I have these topics:$`, f.iHaveTheseTopics)
 	ctx.Step(`^I have these contents:$`, f.iHaveTheseContents)
+	ctx.Step(`^the document in the database for id "([^"]*)" should be:`, f.theDocumentInTheDatabaseForIDShouldBe)
 }
 
 func (f *TopicComponent) Close() error {

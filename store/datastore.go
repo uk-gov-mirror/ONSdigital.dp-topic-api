@@ -24,6 +24,7 @@ type dataMongoDB interface {
 	UpdateReleaseDate(ctx context.Context, id string, releaseDate time.Time) error
 	UpdateState(ctx context.Context, id, state string) error
 	UpdateTopic(ctx context.Context, id string, topic *models.TopicResponse) error
+	UpdateTopicData(ctx context.Context, id string, topic *models.TopicUpdate) error
 }
 
 // MongoDB represents all the required methods from mongo DB

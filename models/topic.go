@@ -47,8 +47,18 @@ type Topic struct {
 	Links       *TopicLinks `bson:"links,omitempty"          json:"links,omitempty"`
 	ReleaseDate *time.Time  `bson:"release_date,omitempty"   json:"release_date,omitempty"`
 	State       string      `bson:"state,omitempty"          json:"state,omitempty"`
-	SubtopicIds []string    `bson:"subtopics_ids,omitempty"  json:"-"`
+	SubtopicIds []string    `bson:"subtopics_ids,omitempty"  json:"subtopics_ids,omitempty"`
 	Title       string      `bson:"title,omitempty"          json:"title,omitempty"`
+}
+
+// TopicUpdate represents the incoming request structure containing a topic update
+type TopicUpdate struct {
+	Description string   `bson:"description"              json:"description"`
+	Keywords    []string `bson:"keywords,omitempty"       json:"keywords,omitempty"`
+	ReleaseDate string   `bson:"release_date"             json:"release_date"`
+	State       string   `bson:"state"                    json:"state"`
+	SubtopicIds []string `bson:"subtopics_ids,omitempty"  json:"subtopics_ids,omitempty"`
+	Title       string   `bson:"title"                    json:"title"`
 }
 
 // TopicRelease represents the incoming request structure containing release content
@@ -84,10 +94,43 @@ func ReadReleaseDate(r io.Reader) (*TopicRelease, error) {
 	return &topicRelease, nil
 }
 
+func ReadTopicUpdate(r io.Reader) (*TopicUpdate, error) {
+	var topicUpdate TopicUpdate
+
+	err := json.NewDecoder(r).Decode(&topicUpdate)
+
+	switch {
+	case err == io.EOF:
+		return nil, apierrors.ErrEmptyRequestBody
+	case err != nil:
+		return nil, apierrors.ErrUnableToReadMessage
+	}
+
+	return &topicUpdate, nil
+}
+
 // Validate checks that a topic struct complies with the state constraints, if provided. TODO may want to add more in future
 func (t *Topic) Validate() error {
 	if _, err := ParseState(t.State); err != nil {
 		return apierrors.ErrTopicInvalidState
+	}
+
+	// TODO add other checks, etc
+	return nil
+}
+
+// Validate checks that a topic update struct complies with the state / release date constraints
+func (t *TopicUpdate) ValidateUpdate() error {
+	if t.State == "" || t.Description == "" || t.Title == "" || t.ReleaseDate == "" {
+		return apierrors.ErrTopicMissingFields
+	}
+
+	if _, err := ParseState(t.State); err != nil {
+		return apierrors.ErrTopicInvalidState
+	}
+
+	if _, err := time.Parse(time.RFC3339, t.ReleaseDate); err != nil {
+		return apierrors.ErrInvalidReleaseDate
 	}
 
 	// TODO add other checks, etc
