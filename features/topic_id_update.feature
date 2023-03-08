@@ -90,6 +90,18 @@ Feature: Behaviour of application when doing the PUT /topics/{id} endpoint, usin
                 "title": "Business, Data and Trade",
                 "description": "Lots of information about Trade",
                 "keywords": ["keyword1", "keyword2"],
+                "links": {
+                    "content": {
+                        "href": "http://localhost:25300/topics/businessindustryandtrade/content"
+                    },
+                    "subtopics": {
+                        "href": "http://localhost:25300/topics/businessindustryandtrade/subtopics"
+                    },
+                    "self": {
+                        "href": "http://localhost:25300/topics/businessindustryandtrade",
+                        "id": "businessindustryandtrade"
+                    }
+                },
                 "release_date": "2022-10-10T08:30:00Z",
                 "state": "published",
                 "subtopics_ids": [

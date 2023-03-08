@@ -36,16 +36,18 @@ type API struct {
 	enablePrivateEndpoints bool
 	navigationCacheMaxAge  string
 	permissions            AuthHandler
+	topicAPIURL            string
 }
 
 // Setup function sets up the api and returns an api
-func Setup(ctx context.Context, cfg *config.Config, router *mux.Router, dataStore store.DataStore, permissions AuthHandler) *API {
+func Setup(ctx context.Context, cfg *config.Config, router *mux.Router, dataStore store.DataStore, permissions AuthHandler, topicAPIURL string) *API {
 	api := &API{
 		Router:                 router,
 		dataStore:              dataStore,
 		enablePrivateEndpoints: cfg.EnablePrivateEndpoints,
 		navigationCacheMaxAge:  fmt.Sprintf("%f", cfg.NavigationCacheMaxAge.Seconds()),
 		permissions:            permissions,
+		topicAPIURL:            topicAPIURL,
 	}
 
 	if cfg.EnablePrivateEndpoints {

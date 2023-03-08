@@ -20,6 +20,7 @@ type Config struct {
 	HealthCheckInterval        time.Duration `envconfig:"HEALTHCHECK_INTERVAL"`
 	MongoConfig
 	NavigationCacheMaxAge time.Duration `envconfig:"NAVIGATION_CACHE_MAX_AGE"`
+	TopicAPIURL           string        `envconfig:"NAVIGATION_CACHE_MAX_AGE"`
 	ZebedeeURL            string        `envconfig:"ZEBEDEE_URL"`
 }
 
@@ -60,6 +61,7 @@ func Get() (*Config, error) {
 			},
 		},
 		NavigationCacheMaxAge: 30 * time.Minute,
+		TopicAPIURL:           "http://localhost:25300",
 		ZebedeeURL:            "http://localhost:8082",
 	}
 

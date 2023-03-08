@@ -83,13 +83,13 @@ func (api *API) getSubtopicsPrivateByID(ctx context.Context, id string, logdata 
 		return
 	}
 
-	if len(topic.Next.SubtopicIds) == 0 {
+	if topic.Next.SubtopicIds == nil || len(*topic.Next.SubtopicIds) == 0 {
 		// no subtopics exist for the requested ID
 		handleError(ctx, w, apierrors.ErrNotFound, logdata)
 		return
 	}
 
-	for _, subTopicID := range topic.Next.SubtopicIds {
+	for _, subTopicID := range *topic.Next.SubtopicIds {
 		// get topic from mongoDB by subTopicID
 		topic, err := api.dataStore.Backend.GetTopic(ctx, subTopicID)
 		if err != nil {
@@ -211,7 +211,7 @@ func (api *API) putTopicPrivateHandler(w http.ResponseWriter, req *http.Request)
 	}
 
 	// update topic in mongo db
-	if err := api.dataStore.Backend.UpdateTopicData(ctx, id, topicUpdate); err != nil {
+	if err := api.dataStore.Backend.UpdateTopic(ctx, api.topicAPIURL, id, topicUpdate); err != nil {
 		handleError(ctx, w, err, logdata)
 		return
 	}
@@ -247,7 +247,7 @@ func (api *API) publishTopic(ctx context.Context, id string) error {
 	newTopic := syncNextAndCurrentTopic(topic)
 
 	// update topic in mongo db
-	if err := api.dataStore.Backend.UpdateTopic(ctx, id, newTopic); err != nil {
+	if err := api.dataStore.Backend.UpsertTopic(ctx, id, newTopic); err != nil {
 		return err
 	}
 

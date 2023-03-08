@@ -11,8 +11,11 @@ import (
 
 	"github.com/ONSdigital/dp-topic-api/apierrors"
 	"github.com/ONSdigital/dp-topic-api/config"
+	"github.com/ONSdigital/dp-topic-api/mocks"
 	"github.com/ONSdigital/dp-topic-api/models"
+	"github.com/ONSdigital/dp-topic-api/store"
 	storeMock "github.com/ONSdigital/dp-topic-api/store/mock"
+	"github.com/gorilla/mux"
 
 	. "github.com/smartystreets/goconvey/convey"
 )
@@ -237,4 +240,14 @@ func TestGetTopicsListPublicHandler(t *testing.T) {
 			// TestGetSubtopicsPublicHandler() above, preventing duplication of tests.
 		})
 	})
+}
+
+// GetAPIWithMocks also used in other tests, so exported
+func GetAPIWithMocks(cfg *config.Config, mockedDataStore store.Storer) *API {
+	mu.Lock()
+	defer mu.Unlock()
+
+	permissions := mocks.NewAuthHandlerMock()
+
+	return Setup(testContext, cfg, mux.NewRouter(), store.DataStore{Backend: mockedDataStore}, permissions, testTopicAPIURL)
 }

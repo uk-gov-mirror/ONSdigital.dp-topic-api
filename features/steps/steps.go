@@ -89,20 +89,30 @@ func (f *TopicComponent) privateEndpointsAreEnabled() error {
 
 func (f *TopicComponent) theDocumentInTheDatabaseForIDShouldBe(documentID string, documentJSON *godog.DocString) error {
 	var expectedTopic models.Topic
+	currentTime := time.Now()
+	startTime := currentTime.Add(-time.Second * 5)
 
 	if err := json.Unmarshal([]byte(documentJSON.Content), &expectedTopic); err != nil {
 		return err
 	}
 
 	collectionName := f.MongoClient.ActualCollectionName(config.TopicsCollection)
-	var link models.TopicResponse
-	if err := f.MongoClient.Connection.Collection(collectionName).FindOne(context.Background(), bson.M{"_id": documentID}, &link); err != nil {
+	var actualTopic models.TopicResponse
+	if err := f.MongoClient.Connection.Collection(collectionName).FindOne(context.Background(), bson.M{"_id": documentID}, &actualTopic); err != nil {
 		return err
 	}
 
-	assert.Equal(&f.ErrorFeature, documentID, link.ID)
+	assert.Equal(&f.ErrorFeature, documentID, actualTopic.ID)
 
-	document := link.Next
+	document := actualTopic.Next
+	f.ErrorFeature.Log(document)
+
+	// checking last_updated has changed by checking if it was set within the last 5 seconds
+	assert.WithinRange(&f.ErrorFeature, *document.LastUpdated, startTime, currentTime)
+
+	// Removing generated timestamps before comparing due to them changing each time tes suite is run
+	document.LastUpdated = nil
+	expectedTopic.LastUpdated = nil
 
 	assert.Equal(&f.ErrorFeature, expectedTopic, *document)
 

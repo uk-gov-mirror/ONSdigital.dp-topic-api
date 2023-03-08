@@ -24,6 +24,8 @@ func TestConfig(t *testing.T) {
 				So(err, ShouldBeNil)
 
 				So(config.BindAddr, ShouldEqual, "localhost:25300")
+				So(cfg.EnablePrivateEndpoints, ShouldEqual, false)
+				So(cfg.EnablePermissionsAuth, ShouldBeFalse)
 				So(config.GracefulShutdownTimeout, ShouldEqual, 10*time.Second)
 				So(config.HealthCheckInterval, ShouldEqual, 30*time.Second)
 				So(config.HealthCheckCriticalTimeout, ShouldEqual, 90*time.Second)
@@ -38,9 +40,9 @@ func TestConfig(t *testing.T) {
 				So(cfg.MongoConfig.ConnectTimeout, ShouldEqual, 5*time.Second)
 				So(cfg.MongoConfig.IsStrongReadConcernEnabled, ShouldEqual, false)
 				So(cfg.MongoConfig.IsWriteConcernMajorityEnabled, ShouldEqual, true)
+
+				So(cfg.TopicAPIURL, ShouldEqual, "http://localhost:25300")
 				So(cfg.ZebedeeURL, ShouldEqual, "http://localhost:8082")
-				So(cfg.EnablePrivateEndpoints, ShouldEqual, false)
-				So(cfg.EnablePermissionsAuth, ShouldBeFalse)
 			})
 
 			Convey("Then a second call to config should return the same config", func() {

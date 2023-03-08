@@ -6,7 +6,6 @@ import (
 	"testing"
 
 	"github.com/ONSdigital/dp-topic-api/config"
-	"github.com/ONSdigital/dp-topic-api/mocks"
 	storetest "github.com/ONSdigital/dp-topic-api/store/mock"
 	. "github.com/smartystreets/goconvey/convey"
 )
@@ -16,9 +15,8 @@ func TestNavigationGetNavigationHandler(t *testing.T) {
 		cfg, err := config.Get()
 		So(err, ShouldBeNil)
 		mockedDataStore := &storetest.StorerMock{}
-		permissions := mocks.NewAuthHandlerMock()
 
-		api := GetWebAPIWithMocks(testContext, cfg, mockedDataStore, permissions)
+		api := GetAPIWithMocks(cfg, mockedDataStore)
 		w := httptest.NewRecorder()
 		So(w.Header(), ShouldBeEmpty)
 

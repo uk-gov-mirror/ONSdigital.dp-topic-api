@@ -11,43 +11,53 @@ import (
 	"time"
 )
 
+var (
+	lockStorerMockCheckTopicExists  sync.RWMutex
+	lockStorerMockGetContent        sync.RWMutex
+	lockStorerMockGetTopic          sync.RWMutex
+	lockStorerMockUpdateReleaseDate sync.RWMutex
+	lockStorerMockUpdateState       sync.RWMutex
+	lockStorerMockUpdateTopic       sync.RWMutex
+	lockStorerMockUpsertTopic       sync.RWMutex
+)
+
 // Ensure, that StorerMock does implement store.Storer.
 // If this is not the case, regenerate this file with moq.
 var _ store.Storer = &StorerMock{}
 
 // StorerMock is a mock implementation of store.Storer.
 //
-//	func TestSomethingThatUsesStorer(t *testing.T) {
+//     func TestSomethingThatUsesStorer(t *testing.T) {
 //
-//		// make and configure a mocked store.Storer
-//		mockedStorer := &StorerMock{
-//			CheckTopicExistsFunc: func(ctx context.Context, id string) error {
-//				panic("mock out the CheckTopicExists method")
-//			},
-//			GetContentFunc: func(ctx context.Context, id string, queryTypeFlags int) (*models.ContentResponse, error) {
-//				panic("mock out the GetContent method")
-//			},
-//			GetTopicFunc: func(ctx context.Context, id string) (*models.TopicResponse, error) {
-//				panic("mock out the GetTopic method")
-//			},
-//			UpdateReleaseDateFunc: func(ctx context.Context, id string, releaseDate time.Time) error {
-//				panic("mock out the UpdateReleaseDate method")
-//			},
-//			UpdateStateFunc: func(ctx context.Context, id string, state string) error {
-//				panic("mock out the UpdateState method")
-//			},
-//			UpdateTopicFunc: func(ctx context.Context, id string, topic *models.TopicResponse) error {
-//				panic("mock out the UpdateTopic method")
-//			},
-//			UpdateTopicDataFunc: func(ctx context.Context, id string, topic *models.TopicUpdate) error {
-//				panic("mock out the UpdateTopicData method")
-//			},
-//		}
+//         // make and configure a mocked store.Storer
+//         mockedStorer := &StorerMock{
+//             CheckTopicExistsFunc: func(ctx context.Context, id string) error {
+// 	               panic("mock out the CheckTopicExists method")
+//             },
+//             GetContentFunc: func(ctx context.Context, id string, queryTypeFlags int) (*models.ContentResponse, error) {
+// 	               panic("mock out the GetContent method")
+//             },
+//             GetTopicFunc: func(ctx context.Context, id string) (*models.TopicResponse, error) {
+// 	               panic("mock out the GetTopic method")
+//             },
+//             UpdateReleaseDateFunc: func(ctx context.Context, id string, releaseDate time.Time) error {
+// 	               panic("mock out the UpdateReleaseDate method")
+//             },
+//             UpdateStateFunc: func(ctx context.Context, id string, state string) error {
+// 	               panic("mock out the UpdateState method")
+//             },
+//             UpdateTopicFunc: func(ctx context.Context, host string, id string, topic *models.TopicUpdate) error {
+// 	               panic("mock out the UpdateTopic method")
+//             },
+//             UpsertTopicFunc: func(ctx context.Context, id string, topic *models.TopicResponse) error {
+// 	               panic("mock out the UpsertTopic method")
+//             },
+//         }
 //
-//		// use mockedStorer in code that requires store.Storer
-//		// and then make assertions.
+//         // use mockedStorer in code that requires store.Storer
+//         // and then make assertions.
 //
-//	}
+//     }
 type StorerMock struct {
 	// CheckTopicExistsFunc mocks the CheckTopicExists method.
 	CheckTopicExistsFunc func(ctx context.Context, id string) error
@@ -65,10 +75,10 @@ type StorerMock struct {
 	UpdateStateFunc func(ctx context.Context, id string, state string) error
 
 	// UpdateTopicFunc mocks the UpdateTopic method.
-	UpdateTopicFunc func(ctx context.Context, id string, topic *models.TopicResponse) error
+	UpdateTopicFunc func(ctx context.Context, host string, id string, topic *models.TopicUpdate) error
 
-	// UpdateTopicDataFunc mocks the UpdateTopicData method.
-	UpdateTopicDataFunc func(ctx context.Context, id string, topic *models.TopicUpdate) error
+	// UpsertTopicFunc mocks the UpsertTopic method.
+	UpsertTopicFunc func(ctx context.Context, id string, topic *models.TopicResponse) error
 
 	// calls tracks calls to the methods.
 	calls struct {
@@ -117,28 +127,23 @@ type StorerMock struct {
 		UpdateTopic []struct {
 			// Ctx is the ctx argument value.
 			Ctx context.Context
-			// ID is the id argument value.
-			ID string
-			// Topic is the topic argument value.
-			Topic *models.TopicResponse
-		}
-		// UpdateTopicData holds details about calls to the UpdateTopicData method.
-		UpdateTopicData []struct {
-			// Ctx is the ctx argument value.
-			Ctx context.Context
+			// Host is the host argument value.
+			Host string
 			// ID is the id argument value.
 			ID string
 			// Topic is the topic argument value.
 			Topic *models.TopicUpdate
 		}
+		// UpsertTopic holds details about calls to the UpsertTopic method.
+		UpsertTopic []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// ID is the id argument value.
+			ID string
+			// Topic is the topic argument value.
+			Topic *models.TopicResponse
+		}
 	}
-	lockCheckTopicExists  sync.RWMutex
-	lockGetContent        sync.RWMutex
-	lockGetTopic          sync.RWMutex
-	lockUpdateReleaseDate sync.RWMutex
-	lockUpdateState       sync.RWMutex
-	lockUpdateTopic       sync.RWMutex
-	lockUpdateTopicData   sync.RWMutex
 }
 
 // CheckTopicExists calls CheckTopicExistsFunc.
@@ -153,16 +158,15 @@ func (mock *StorerMock) CheckTopicExists(ctx context.Context, id string) error {
 		Ctx: ctx,
 		ID:  id,
 	}
-	mock.lockCheckTopicExists.Lock()
+	lockStorerMockCheckTopicExists.Lock()
 	mock.calls.CheckTopicExists = append(mock.calls.CheckTopicExists, callInfo)
-	mock.lockCheckTopicExists.Unlock()
+	lockStorerMockCheckTopicExists.Unlock()
 	return mock.CheckTopicExistsFunc(ctx, id)
 }
 
 // CheckTopicExistsCalls gets all the calls that were made to CheckTopicExists.
 // Check the length with:
-//
-//	len(mockedStorer.CheckTopicExistsCalls())
+//     len(mockedStorer.CheckTopicExistsCalls())
 func (mock *StorerMock) CheckTopicExistsCalls() []struct {
 	Ctx context.Context
 	ID  string
@@ -171,9 +175,9 @@ func (mock *StorerMock) CheckTopicExistsCalls() []struct {
 		Ctx context.Context
 		ID  string
 	}
-	mock.lockCheckTopicExists.RLock()
+	lockStorerMockCheckTopicExists.RLock()
 	calls = mock.calls.CheckTopicExists
-	mock.lockCheckTopicExists.RUnlock()
+	lockStorerMockCheckTopicExists.RUnlock()
 	return calls
 }
 
@@ -191,16 +195,15 @@ func (mock *StorerMock) GetContent(ctx context.Context, id string, queryTypeFlag
 		ID:             id,
 		QueryTypeFlags: queryTypeFlags,
 	}
-	mock.lockGetContent.Lock()
+	lockStorerMockGetContent.Lock()
 	mock.calls.GetContent = append(mock.calls.GetContent, callInfo)
-	mock.lockGetContent.Unlock()
+	lockStorerMockGetContent.Unlock()
 	return mock.GetContentFunc(ctx, id, queryTypeFlags)
 }
 
 // GetContentCalls gets all the calls that were made to GetContent.
 // Check the length with:
-//
-//	len(mockedStorer.GetContentCalls())
+//     len(mockedStorer.GetContentCalls())
 func (mock *StorerMock) GetContentCalls() []struct {
 	Ctx            context.Context
 	ID             string
@@ -211,9 +214,9 @@ func (mock *StorerMock) GetContentCalls() []struct {
 		ID             string
 		QueryTypeFlags int
 	}
-	mock.lockGetContent.RLock()
+	lockStorerMockGetContent.RLock()
 	calls = mock.calls.GetContent
-	mock.lockGetContent.RUnlock()
+	lockStorerMockGetContent.RUnlock()
 	return calls
 }
 
@@ -229,16 +232,15 @@ func (mock *StorerMock) GetTopic(ctx context.Context, id string) (*models.TopicR
 		Ctx: ctx,
 		ID:  id,
 	}
-	mock.lockGetTopic.Lock()
+	lockStorerMockGetTopic.Lock()
 	mock.calls.GetTopic = append(mock.calls.GetTopic, callInfo)
-	mock.lockGetTopic.Unlock()
+	lockStorerMockGetTopic.Unlock()
 	return mock.GetTopicFunc(ctx, id)
 }
 
 // GetTopicCalls gets all the calls that were made to GetTopic.
 // Check the length with:
-//
-//	len(mockedStorer.GetTopicCalls())
+//     len(mockedStorer.GetTopicCalls())
 func (mock *StorerMock) GetTopicCalls() []struct {
 	Ctx context.Context
 	ID  string
@@ -247,9 +249,9 @@ func (mock *StorerMock) GetTopicCalls() []struct {
 		Ctx context.Context
 		ID  string
 	}
-	mock.lockGetTopic.RLock()
+	lockStorerMockGetTopic.RLock()
 	calls = mock.calls.GetTopic
-	mock.lockGetTopic.RUnlock()
+	lockStorerMockGetTopic.RUnlock()
 	return calls
 }
 
@@ -267,16 +269,15 @@ func (mock *StorerMock) UpdateReleaseDate(ctx context.Context, id string, releas
 		ID:          id,
 		ReleaseDate: releaseDate,
 	}
-	mock.lockUpdateReleaseDate.Lock()
+	lockStorerMockUpdateReleaseDate.Lock()
 	mock.calls.UpdateReleaseDate = append(mock.calls.UpdateReleaseDate, callInfo)
-	mock.lockUpdateReleaseDate.Unlock()
+	lockStorerMockUpdateReleaseDate.Unlock()
 	return mock.UpdateReleaseDateFunc(ctx, id, releaseDate)
 }
 
 // UpdateReleaseDateCalls gets all the calls that were made to UpdateReleaseDate.
 // Check the length with:
-//
-//	len(mockedStorer.UpdateReleaseDateCalls())
+//     len(mockedStorer.UpdateReleaseDateCalls())
 func (mock *StorerMock) UpdateReleaseDateCalls() []struct {
 	Ctx         context.Context
 	ID          string
@@ -287,9 +288,9 @@ func (mock *StorerMock) UpdateReleaseDateCalls() []struct {
 		ID          string
 		ReleaseDate time.Time
 	}
-	mock.lockUpdateReleaseDate.RLock()
+	lockStorerMockUpdateReleaseDate.RLock()
 	calls = mock.calls.UpdateReleaseDate
-	mock.lockUpdateReleaseDate.RUnlock()
+	lockStorerMockUpdateReleaseDate.RUnlock()
 	return calls
 }
 
@@ -307,16 +308,15 @@ func (mock *StorerMock) UpdateState(ctx context.Context, id string, state string
 		ID:    id,
 		State: state,
 	}
-	mock.lockUpdateState.Lock()
+	lockStorerMockUpdateState.Lock()
 	mock.calls.UpdateState = append(mock.calls.UpdateState, callInfo)
-	mock.lockUpdateState.Unlock()
+	lockStorerMockUpdateState.Unlock()
 	return mock.UpdateStateFunc(ctx, id, state)
 }
 
 // UpdateStateCalls gets all the calls that were made to UpdateState.
 // Check the length with:
-//
-//	len(mockedStorer.UpdateStateCalls())
+//     len(mockedStorer.UpdateStateCalls())
 func (mock *StorerMock) UpdateStateCalls() []struct {
 	Ctx   context.Context
 	ID    string
@@ -327,16 +327,59 @@ func (mock *StorerMock) UpdateStateCalls() []struct {
 		ID    string
 		State string
 	}
-	mock.lockUpdateState.RLock()
+	lockStorerMockUpdateState.RLock()
 	calls = mock.calls.UpdateState
-	mock.lockUpdateState.RUnlock()
+	lockStorerMockUpdateState.RUnlock()
 	return calls
 }
 
 // UpdateTopic calls UpdateTopicFunc.
-func (mock *StorerMock) UpdateTopic(ctx context.Context, id string, topic *models.TopicResponse) error {
+func (mock *StorerMock) UpdateTopic(ctx context.Context, host string, id string, topic *models.TopicUpdate) error {
 	if mock.UpdateTopicFunc == nil {
 		panic("StorerMock.UpdateTopicFunc: method is nil but Storer.UpdateTopic was just called")
+	}
+	callInfo := struct {
+		Ctx   context.Context
+		Host  string
+		ID    string
+		Topic *models.TopicUpdate
+	}{
+		Ctx:   ctx,
+		Host:  host,
+		ID:    id,
+		Topic: topic,
+	}
+	lockStorerMockUpdateTopic.Lock()
+	mock.calls.UpdateTopic = append(mock.calls.UpdateTopic, callInfo)
+	lockStorerMockUpdateTopic.Unlock()
+	return mock.UpdateTopicFunc(ctx, host, id, topic)
+}
+
+// UpdateTopicCalls gets all the calls that were made to UpdateTopic.
+// Check the length with:
+//     len(mockedStorer.UpdateTopicCalls())
+func (mock *StorerMock) UpdateTopicCalls() []struct {
+	Ctx   context.Context
+	Host  string
+	ID    string
+	Topic *models.TopicUpdate
+} {
+	var calls []struct {
+		Ctx   context.Context
+		Host  string
+		ID    string
+		Topic *models.TopicUpdate
+	}
+	lockStorerMockUpdateTopic.RLock()
+	calls = mock.calls.UpdateTopic
+	lockStorerMockUpdateTopic.RUnlock()
+	return calls
+}
+
+// UpsertTopic calls UpsertTopicFunc.
+func (mock *StorerMock) UpsertTopic(ctx context.Context, id string, topic *models.TopicResponse) error {
+	if mock.UpsertTopicFunc == nil {
+		panic("StorerMock.UpsertTopicFunc: method is nil but Storer.UpsertTopic was just called")
 	}
 	callInfo := struct {
 		Ctx   context.Context
@@ -347,17 +390,16 @@ func (mock *StorerMock) UpdateTopic(ctx context.Context, id string, topic *model
 		ID:    id,
 		Topic: topic,
 	}
-	mock.lockUpdateTopic.Lock()
-	mock.calls.UpdateTopic = append(mock.calls.UpdateTopic, callInfo)
-	mock.lockUpdateTopic.Unlock()
-	return mock.UpdateTopicFunc(ctx, id, topic)
+	lockStorerMockUpsertTopic.Lock()
+	mock.calls.UpsertTopic = append(mock.calls.UpsertTopic, callInfo)
+	lockStorerMockUpsertTopic.Unlock()
+	return mock.UpsertTopicFunc(ctx, id, topic)
 }
 
-// UpdateTopicCalls gets all the calls that were made to UpdateTopic.
+// UpsertTopicCalls gets all the calls that were made to UpsertTopic.
 // Check the length with:
-//
-//	len(mockedStorer.UpdateTopicCalls())
-func (mock *StorerMock) UpdateTopicCalls() []struct {
+//     len(mockedStorer.UpsertTopicCalls())
+func (mock *StorerMock) UpsertTopicCalls() []struct {
 	Ctx   context.Context
 	ID    string
 	Topic *models.TopicResponse
@@ -367,48 +409,8 @@ func (mock *StorerMock) UpdateTopicCalls() []struct {
 		ID    string
 		Topic *models.TopicResponse
 	}
-	mock.lockUpdateTopic.RLock()
-	calls = mock.calls.UpdateTopic
-	mock.lockUpdateTopic.RUnlock()
-	return calls
-}
-
-// UpdateTopicData calls UpdateTopicDataFunc.
-func (mock *StorerMock) UpdateTopicData(ctx context.Context, id string, topic *models.TopicUpdate) error {
-	if mock.UpdateTopicDataFunc == nil {
-		panic("StorerMock.UpdateTopicDataFunc: method is nil but Storer.UpdateTopicData was just called")
-	}
-	callInfo := struct {
-		Ctx   context.Context
-		ID    string
-		Topic *models.TopicUpdate
-	}{
-		Ctx:   ctx,
-		ID:    id,
-		Topic: topic,
-	}
-	mock.lockUpdateTopicData.Lock()
-	mock.calls.UpdateTopicData = append(mock.calls.UpdateTopicData, callInfo)
-	mock.lockUpdateTopicData.Unlock()
-	return mock.UpdateTopicDataFunc(ctx, id, topic)
-}
-
-// UpdateTopicDataCalls gets all the calls that were made to UpdateTopicData.
-// Check the length with:
-//
-//	len(mockedStorer.UpdateTopicDataCalls())
-func (mock *StorerMock) UpdateTopicDataCalls() []struct {
-	Ctx   context.Context
-	ID    string
-	Topic *models.TopicUpdate
-} {
-	var calls []struct {
-		Ctx   context.Context
-		ID    string
-		Topic *models.TopicUpdate
-	}
-	mock.lockUpdateTopicData.RLock()
-	calls = mock.calls.UpdateTopicData
-	mock.lockUpdateTopicData.RUnlock()
+	lockStorerMockUpsertTopic.RLock()
+	calls = mock.calls.UpsertTopic
+	lockStorerMockUpsertTopic.RUnlock()
 	return calls
 }

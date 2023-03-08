@@ -12,58 +12,70 @@ import (
 	"time"
 )
 
+var (
+	lockMongoDBMockCheckTopicExists  sync.RWMutex
+	lockMongoDBMockChecker           sync.RWMutex
+	lockMongoDBMockClose             sync.RWMutex
+	lockMongoDBMockGetContent        sync.RWMutex
+	lockMongoDBMockGetTopic          sync.RWMutex
+	lockMongoDBMockUpdateReleaseDate sync.RWMutex
+	lockMongoDBMockUpdateState       sync.RWMutex
+	lockMongoDBMockUpdateTopic       sync.RWMutex
+	lockMongoDBMockUpsertTopic       sync.RWMutex
+)
+
 // Ensure, that MongoDBMock does implement store.MongoDB.
 // If this is not the case, regenerate this file with moq.
 var _ store.MongoDB = &MongoDBMock{}
 
 // MongoDBMock is a mock implementation of store.MongoDB.
 //
-//	func TestSomethingThatUsesMongoDB(t *testing.T) {
+//     func TestSomethingThatUsesMongoDB(t *testing.T) {
 //
-//		// make and configure a mocked store.MongoDB
-//		mockedMongoDB := &MongoDBMock{
-//			CheckTopicExistsFunc: func(ctx context.Context, id string) error {
-//				panic("mock out the CheckTopicExists method")
-//			},
-//			CheckerFunc: func(contextMoqParam context.Context, checkState *healthcheck.CheckState) error {
-//				panic("mock out the Checker method")
-//			},
-//			CloseFunc: func(contextMoqParam context.Context) error {
-//				panic("mock out the Close method")
-//			},
-//			GetContentFunc: func(ctx context.Context, id string, queryTypeFlags int) (*models.ContentResponse, error) {
-//				panic("mock out the GetContent method")
-//			},
-//			GetTopicFunc: func(ctx context.Context, id string) (*models.TopicResponse, error) {
-//				panic("mock out the GetTopic method")
-//			},
-//			UpdateReleaseDateFunc: func(ctx context.Context, id string, releaseDate time.Time) error {
-//				panic("mock out the UpdateReleaseDate method")
-//			},
-//			UpdateStateFunc: func(ctx context.Context, id string, state string) error {
-//				panic("mock out the UpdateState method")
-//			},
-//			UpdateTopicFunc: func(ctx context.Context, id string, topic *models.TopicResponse) error {
-//				panic("mock out the UpdateTopic method")
-//			},
-//			UpdateTopicDataFunc: func(ctx context.Context, id string, topic *models.TopicUpdate) error {
-//				panic("mock out the UpdateTopicData method")
-//			},
-//		}
+//         // make and configure a mocked store.MongoDB
+//         mockedMongoDB := &MongoDBMock{
+//             CheckTopicExistsFunc: func(ctx context.Context, id string) error {
+// 	               panic("mock out the CheckTopicExists method")
+//             },
+//             CheckerFunc: func(in1 context.Context, in2 *healthcheck.CheckState) error {
+// 	               panic("mock out the Checker method")
+//             },
+//             CloseFunc: func(in1 context.Context) error {
+// 	               panic("mock out the Close method")
+//             },
+//             GetContentFunc: func(ctx context.Context, id string, queryTypeFlags int) (*models.ContentResponse, error) {
+// 	               panic("mock out the GetContent method")
+//             },
+//             GetTopicFunc: func(ctx context.Context, id string) (*models.TopicResponse, error) {
+// 	               panic("mock out the GetTopic method")
+//             },
+//             UpdateReleaseDateFunc: func(ctx context.Context, id string, releaseDate time.Time) error {
+// 	               panic("mock out the UpdateReleaseDate method")
+//             },
+//             UpdateStateFunc: func(ctx context.Context, id string, state string) error {
+// 	               panic("mock out the UpdateState method")
+//             },
+//             UpdateTopicFunc: func(ctx context.Context, host string, id string, topic *models.TopicUpdate) error {
+// 	               panic("mock out the UpdateTopic method")
+//             },
+//             UpsertTopicFunc: func(ctx context.Context, id string, topic *models.TopicResponse) error {
+// 	               panic("mock out the UpsertTopic method")
+//             },
+//         }
 //
-//		// use mockedMongoDB in code that requires store.MongoDB
-//		// and then make assertions.
+//         // use mockedMongoDB in code that requires store.MongoDB
+//         // and then make assertions.
 //
-//	}
+//     }
 type MongoDBMock struct {
 	// CheckTopicExistsFunc mocks the CheckTopicExists method.
 	CheckTopicExistsFunc func(ctx context.Context, id string) error
 
 	// CheckerFunc mocks the Checker method.
-	CheckerFunc func(contextMoqParam context.Context, checkState *healthcheck.CheckState) error
+	CheckerFunc func(in1 context.Context, in2 *healthcheck.CheckState) error
 
 	// CloseFunc mocks the Close method.
-	CloseFunc func(contextMoqParam context.Context) error
+	CloseFunc func(in1 context.Context) error
 
 	// GetContentFunc mocks the GetContent method.
 	GetContentFunc func(ctx context.Context, id string, queryTypeFlags int) (*models.ContentResponse, error)
@@ -78,10 +90,10 @@ type MongoDBMock struct {
 	UpdateStateFunc func(ctx context.Context, id string, state string) error
 
 	// UpdateTopicFunc mocks the UpdateTopic method.
-	UpdateTopicFunc func(ctx context.Context, id string, topic *models.TopicResponse) error
+	UpdateTopicFunc func(ctx context.Context, host string, id string, topic *models.TopicUpdate) error
 
-	// UpdateTopicDataFunc mocks the UpdateTopicData method.
-	UpdateTopicDataFunc func(ctx context.Context, id string, topic *models.TopicUpdate) error
+	// UpsertTopicFunc mocks the UpsertTopic method.
+	UpsertTopicFunc func(ctx context.Context, id string, topic *models.TopicResponse) error
 
 	// calls tracks calls to the methods.
 	calls struct {
@@ -94,15 +106,15 @@ type MongoDBMock struct {
 		}
 		// Checker holds details about calls to the Checker method.
 		Checker []struct {
-			// ContextMoqParam is the contextMoqParam argument value.
-			ContextMoqParam context.Context
-			// CheckState is the checkState argument value.
-			CheckState *healthcheck.CheckState
+			// In1 is the in1 argument value.
+			In1 context.Context
+			// In2 is the in2 argument value.
+			In2 *healthcheck.CheckState
 		}
 		// Close holds details about calls to the Close method.
 		Close []struct {
-			// ContextMoqParam is the contextMoqParam argument value.
-			ContextMoqParam context.Context
+			// In1 is the in1 argument value.
+			In1 context.Context
 		}
 		// GetContent holds details about calls to the GetContent method.
 		GetContent []struct {
@@ -142,30 +154,23 @@ type MongoDBMock struct {
 		UpdateTopic []struct {
 			// Ctx is the ctx argument value.
 			Ctx context.Context
-			// ID is the id argument value.
-			ID string
-			// Topic is the topic argument value.
-			Topic *models.TopicResponse
-		}
-		// UpdateTopicData holds details about calls to the UpdateTopicData method.
-		UpdateTopicData []struct {
-			// Ctx is the ctx argument value.
-			Ctx context.Context
+			// Host is the host argument value.
+			Host string
 			// ID is the id argument value.
 			ID string
 			// Topic is the topic argument value.
 			Topic *models.TopicUpdate
 		}
+		// UpsertTopic holds details about calls to the UpsertTopic method.
+		UpsertTopic []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// ID is the id argument value.
+			ID string
+			// Topic is the topic argument value.
+			Topic *models.TopicResponse
+		}
 	}
-	lockCheckTopicExists  sync.RWMutex
-	lockChecker           sync.RWMutex
-	lockClose             sync.RWMutex
-	lockGetContent        sync.RWMutex
-	lockGetTopic          sync.RWMutex
-	lockUpdateReleaseDate sync.RWMutex
-	lockUpdateState       sync.RWMutex
-	lockUpdateTopic       sync.RWMutex
-	lockUpdateTopicData   sync.RWMutex
 }
 
 // CheckTopicExists calls CheckTopicExistsFunc.
@@ -180,16 +185,15 @@ func (mock *MongoDBMock) CheckTopicExists(ctx context.Context, id string) error 
 		Ctx: ctx,
 		ID:  id,
 	}
-	mock.lockCheckTopicExists.Lock()
+	lockMongoDBMockCheckTopicExists.Lock()
 	mock.calls.CheckTopicExists = append(mock.calls.CheckTopicExists, callInfo)
-	mock.lockCheckTopicExists.Unlock()
+	lockMongoDBMockCheckTopicExists.Unlock()
 	return mock.CheckTopicExistsFunc(ctx, id)
 }
 
 // CheckTopicExistsCalls gets all the calls that were made to CheckTopicExists.
 // Check the length with:
-//
-//	len(mockedMongoDB.CheckTopicExistsCalls())
+//     len(mockedMongoDB.CheckTopicExistsCalls())
 func (mock *MongoDBMock) CheckTopicExistsCalls() []struct {
 	Ctx context.Context
 	ID  string
@@ -198,77 +202,75 @@ func (mock *MongoDBMock) CheckTopicExistsCalls() []struct {
 		Ctx context.Context
 		ID  string
 	}
-	mock.lockCheckTopicExists.RLock()
+	lockMongoDBMockCheckTopicExists.RLock()
 	calls = mock.calls.CheckTopicExists
-	mock.lockCheckTopicExists.RUnlock()
+	lockMongoDBMockCheckTopicExists.RUnlock()
 	return calls
 }
 
 // Checker calls CheckerFunc.
-func (mock *MongoDBMock) Checker(contextMoqParam context.Context, checkState *healthcheck.CheckState) error {
+func (mock *MongoDBMock) Checker(in1 context.Context, in2 *healthcheck.CheckState) error {
 	if mock.CheckerFunc == nil {
 		panic("MongoDBMock.CheckerFunc: method is nil but MongoDB.Checker was just called")
 	}
 	callInfo := struct {
-		ContextMoqParam context.Context
-		CheckState      *healthcheck.CheckState
+		In1 context.Context
+		In2 *healthcheck.CheckState
 	}{
-		ContextMoqParam: contextMoqParam,
-		CheckState:      checkState,
+		In1: in1,
+		In2: in2,
 	}
-	mock.lockChecker.Lock()
+	lockMongoDBMockChecker.Lock()
 	mock.calls.Checker = append(mock.calls.Checker, callInfo)
-	mock.lockChecker.Unlock()
-	return mock.CheckerFunc(contextMoqParam, checkState)
+	lockMongoDBMockChecker.Unlock()
+	return mock.CheckerFunc(in1, in2)
 }
 
 // CheckerCalls gets all the calls that were made to Checker.
 // Check the length with:
-//
-//	len(mockedMongoDB.CheckerCalls())
+//     len(mockedMongoDB.CheckerCalls())
 func (mock *MongoDBMock) CheckerCalls() []struct {
-	ContextMoqParam context.Context
-	CheckState      *healthcheck.CheckState
+	In1 context.Context
+	In2 *healthcheck.CheckState
 } {
 	var calls []struct {
-		ContextMoqParam context.Context
-		CheckState      *healthcheck.CheckState
+		In1 context.Context
+		In2 *healthcheck.CheckState
 	}
-	mock.lockChecker.RLock()
+	lockMongoDBMockChecker.RLock()
 	calls = mock.calls.Checker
-	mock.lockChecker.RUnlock()
+	lockMongoDBMockChecker.RUnlock()
 	return calls
 }
 
 // Close calls CloseFunc.
-func (mock *MongoDBMock) Close(contextMoqParam context.Context) error {
+func (mock *MongoDBMock) Close(in1 context.Context) error {
 	if mock.CloseFunc == nil {
 		panic("MongoDBMock.CloseFunc: method is nil but MongoDB.Close was just called")
 	}
 	callInfo := struct {
-		ContextMoqParam context.Context
+		In1 context.Context
 	}{
-		ContextMoqParam: contextMoqParam,
+		In1: in1,
 	}
-	mock.lockClose.Lock()
+	lockMongoDBMockClose.Lock()
 	mock.calls.Close = append(mock.calls.Close, callInfo)
-	mock.lockClose.Unlock()
-	return mock.CloseFunc(contextMoqParam)
+	lockMongoDBMockClose.Unlock()
+	return mock.CloseFunc(in1)
 }
 
 // CloseCalls gets all the calls that were made to Close.
 // Check the length with:
-//
-//	len(mockedMongoDB.CloseCalls())
+//     len(mockedMongoDB.CloseCalls())
 func (mock *MongoDBMock) CloseCalls() []struct {
-	ContextMoqParam context.Context
+	In1 context.Context
 } {
 	var calls []struct {
-		ContextMoqParam context.Context
+		In1 context.Context
 	}
-	mock.lockClose.RLock()
+	lockMongoDBMockClose.RLock()
 	calls = mock.calls.Close
-	mock.lockClose.RUnlock()
+	lockMongoDBMockClose.RUnlock()
 	return calls
 }
 
@@ -286,16 +288,15 @@ func (mock *MongoDBMock) GetContent(ctx context.Context, id string, queryTypeFla
 		ID:             id,
 		QueryTypeFlags: queryTypeFlags,
 	}
-	mock.lockGetContent.Lock()
+	lockMongoDBMockGetContent.Lock()
 	mock.calls.GetContent = append(mock.calls.GetContent, callInfo)
-	mock.lockGetContent.Unlock()
+	lockMongoDBMockGetContent.Unlock()
 	return mock.GetContentFunc(ctx, id, queryTypeFlags)
 }
 
 // GetContentCalls gets all the calls that were made to GetContent.
 // Check the length with:
-//
-//	len(mockedMongoDB.GetContentCalls())
+//     len(mockedMongoDB.GetContentCalls())
 func (mock *MongoDBMock) GetContentCalls() []struct {
 	Ctx            context.Context
 	ID             string
@@ -306,9 +307,9 @@ func (mock *MongoDBMock) GetContentCalls() []struct {
 		ID             string
 		QueryTypeFlags int
 	}
-	mock.lockGetContent.RLock()
+	lockMongoDBMockGetContent.RLock()
 	calls = mock.calls.GetContent
-	mock.lockGetContent.RUnlock()
+	lockMongoDBMockGetContent.RUnlock()
 	return calls
 }
 
@@ -324,16 +325,15 @@ func (mock *MongoDBMock) GetTopic(ctx context.Context, id string) (*models.Topic
 		Ctx: ctx,
 		ID:  id,
 	}
-	mock.lockGetTopic.Lock()
+	lockMongoDBMockGetTopic.Lock()
 	mock.calls.GetTopic = append(mock.calls.GetTopic, callInfo)
-	mock.lockGetTopic.Unlock()
+	lockMongoDBMockGetTopic.Unlock()
 	return mock.GetTopicFunc(ctx, id)
 }
 
 // GetTopicCalls gets all the calls that were made to GetTopic.
 // Check the length with:
-//
-//	len(mockedMongoDB.GetTopicCalls())
+//     len(mockedMongoDB.GetTopicCalls())
 func (mock *MongoDBMock) GetTopicCalls() []struct {
 	Ctx context.Context
 	ID  string
@@ -342,9 +342,9 @@ func (mock *MongoDBMock) GetTopicCalls() []struct {
 		Ctx context.Context
 		ID  string
 	}
-	mock.lockGetTopic.RLock()
+	lockMongoDBMockGetTopic.RLock()
 	calls = mock.calls.GetTopic
-	mock.lockGetTopic.RUnlock()
+	lockMongoDBMockGetTopic.RUnlock()
 	return calls
 }
 
@@ -362,16 +362,15 @@ func (mock *MongoDBMock) UpdateReleaseDate(ctx context.Context, id string, relea
 		ID:          id,
 		ReleaseDate: releaseDate,
 	}
-	mock.lockUpdateReleaseDate.Lock()
+	lockMongoDBMockUpdateReleaseDate.Lock()
 	mock.calls.UpdateReleaseDate = append(mock.calls.UpdateReleaseDate, callInfo)
-	mock.lockUpdateReleaseDate.Unlock()
+	lockMongoDBMockUpdateReleaseDate.Unlock()
 	return mock.UpdateReleaseDateFunc(ctx, id, releaseDate)
 }
 
 // UpdateReleaseDateCalls gets all the calls that were made to UpdateReleaseDate.
 // Check the length with:
-//
-//	len(mockedMongoDB.UpdateReleaseDateCalls())
+//     len(mockedMongoDB.UpdateReleaseDateCalls())
 func (mock *MongoDBMock) UpdateReleaseDateCalls() []struct {
 	Ctx         context.Context
 	ID          string
@@ -382,9 +381,9 @@ func (mock *MongoDBMock) UpdateReleaseDateCalls() []struct {
 		ID          string
 		ReleaseDate time.Time
 	}
-	mock.lockUpdateReleaseDate.RLock()
+	lockMongoDBMockUpdateReleaseDate.RLock()
 	calls = mock.calls.UpdateReleaseDate
-	mock.lockUpdateReleaseDate.RUnlock()
+	lockMongoDBMockUpdateReleaseDate.RUnlock()
 	return calls
 }
 
@@ -402,16 +401,15 @@ func (mock *MongoDBMock) UpdateState(ctx context.Context, id string, state strin
 		ID:    id,
 		State: state,
 	}
-	mock.lockUpdateState.Lock()
+	lockMongoDBMockUpdateState.Lock()
 	mock.calls.UpdateState = append(mock.calls.UpdateState, callInfo)
-	mock.lockUpdateState.Unlock()
+	lockMongoDBMockUpdateState.Unlock()
 	return mock.UpdateStateFunc(ctx, id, state)
 }
 
 // UpdateStateCalls gets all the calls that were made to UpdateState.
 // Check the length with:
-//
-//	len(mockedMongoDB.UpdateStateCalls())
+//     len(mockedMongoDB.UpdateStateCalls())
 func (mock *MongoDBMock) UpdateStateCalls() []struct {
 	Ctx   context.Context
 	ID    string
@@ -422,16 +420,59 @@ func (mock *MongoDBMock) UpdateStateCalls() []struct {
 		ID    string
 		State string
 	}
-	mock.lockUpdateState.RLock()
+	lockMongoDBMockUpdateState.RLock()
 	calls = mock.calls.UpdateState
-	mock.lockUpdateState.RUnlock()
+	lockMongoDBMockUpdateState.RUnlock()
 	return calls
 }
 
 // UpdateTopic calls UpdateTopicFunc.
-func (mock *MongoDBMock) UpdateTopic(ctx context.Context, id string, topic *models.TopicResponse) error {
+func (mock *MongoDBMock) UpdateTopic(ctx context.Context, host string, id string, topic *models.TopicUpdate) error {
 	if mock.UpdateTopicFunc == nil {
 		panic("MongoDBMock.UpdateTopicFunc: method is nil but MongoDB.UpdateTopic was just called")
+	}
+	callInfo := struct {
+		Ctx   context.Context
+		Host  string
+		ID    string
+		Topic *models.TopicUpdate
+	}{
+		Ctx:   ctx,
+		Host:  host,
+		ID:    id,
+		Topic: topic,
+	}
+	lockMongoDBMockUpdateTopic.Lock()
+	mock.calls.UpdateTopic = append(mock.calls.UpdateTopic, callInfo)
+	lockMongoDBMockUpdateTopic.Unlock()
+	return mock.UpdateTopicFunc(ctx, host, id, topic)
+}
+
+// UpdateTopicCalls gets all the calls that were made to UpdateTopic.
+// Check the length with:
+//     len(mockedMongoDB.UpdateTopicCalls())
+func (mock *MongoDBMock) UpdateTopicCalls() []struct {
+	Ctx   context.Context
+	Host  string
+	ID    string
+	Topic *models.TopicUpdate
+} {
+	var calls []struct {
+		Ctx   context.Context
+		Host  string
+		ID    string
+		Topic *models.TopicUpdate
+	}
+	lockMongoDBMockUpdateTopic.RLock()
+	calls = mock.calls.UpdateTopic
+	lockMongoDBMockUpdateTopic.RUnlock()
+	return calls
+}
+
+// UpsertTopic calls UpsertTopicFunc.
+func (mock *MongoDBMock) UpsertTopic(ctx context.Context, id string, topic *models.TopicResponse) error {
+	if mock.UpsertTopicFunc == nil {
+		panic("MongoDBMock.UpsertTopicFunc: method is nil but MongoDB.UpsertTopic was just called")
 	}
 	callInfo := struct {
 		Ctx   context.Context
@@ -442,17 +483,16 @@ func (mock *MongoDBMock) UpdateTopic(ctx context.Context, id string, topic *mode
 		ID:    id,
 		Topic: topic,
 	}
-	mock.lockUpdateTopic.Lock()
-	mock.calls.UpdateTopic = append(mock.calls.UpdateTopic, callInfo)
-	mock.lockUpdateTopic.Unlock()
-	return mock.UpdateTopicFunc(ctx, id, topic)
+	lockMongoDBMockUpsertTopic.Lock()
+	mock.calls.UpsertTopic = append(mock.calls.UpsertTopic, callInfo)
+	lockMongoDBMockUpsertTopic.Unlock()
+	return mock.UpsertTopicFunc(ctx, id, topic)
 }
 
-// UpdateTopicCalls gets all the calls that were made to UpdateTopic.
+// UpsertTopicCalls gets all the calls that were made to UpsertTopic.
 // Check the length with:
-//
-//	len(mockedMongoDB.UpdateTopicCalls())
-func (mock *MongoDBMock) UpdateTopicCalls() []struct {
+//     len(mockedMongoDB.UpsertTopicCalls())
+func (mock *MongoDBMock) UpsertTopicCalls() []struct {
 	Ctx   context.Context
 	ID    string
 	Topic *models.TopicResponse
@@ -462,48 +502,8 @@ func (mock *MongoDBMock) UpdateTopicCalls() []struct {
 		ID    string
 		Topic *models.TopicResponse
 	}
-	mock.lockUpdateTopic.RLock()
-	calls = mock.calls.UpdateTopic
-	mock.lockUpdateTopic.RUnlock()
-	return calls
-}
-
-// UpdateTopicData calls UpdateTopicDataFunc.
-func (mock *MongoDBMock) UpdateTopicData(ctx context.Context, id string, topic *models.TopicUpdate) error {
-	if mock.UpdateTopicDataFunc == nil {
-		panic("MongoDBMock.UpdateTopicDataFunc: method is nil but MongoDB.UpdateTopicData was just called")
-	}
-	callInfo := struct {
-		Ctx   context.Context
-		ID    string
-		Topic *models.TopicUpdate
-	}{
-		Ctx:   ctx,
-		ID:    id,
-		Topic: topic,
-	}
-	mock.lockUpdateTopicData.Lock()
-	mock.calls.UpdateTopicData = append(mock.calls.UpdateTopicData, callInfo)
-	mock.lockUpdateTopicData.Unlock()
-	return mock.UpdateTopicDataFunc(ctx, id, topic)
-}
-
-// UpdateTopicDataCalls gets all the calls that were made to UpdateTopicData.
-// Check the length with:
-//
-//	len(mockedMongoDB.UpdateTopicDataCalls())
-func (mock *MongoDBMock) UpdateTopicDataCalls() []struct {
-	Ctx   context.Context
-	ID    string
-	Topic *models.TopicUpdate
-} {
-	var calls []struct {
-		Ctx   context.Context
-		ID    string
-		Topic *models.TopicUpdate
-	}
-	mock.lockUpdateTopicData.RLock()
-	calls = mock.calls.UpdateTopicData
-	mock.lockUpdateTopicData.RUnlock()
+	lockMongoDBMockUpsertTopic.RLock()
+	calls = mock.calls.UpsertTopic
+	lockMongoDBMockUpsertTopic.RUnlock()
 	return calls
 }

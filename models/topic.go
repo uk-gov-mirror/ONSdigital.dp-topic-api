@@ -43,22 +43,23 @@ type TopicResponse struct {
 type Topic struct {
 	ID          string      `bson:"id,omitempty"             json:"id,omitempty"`
 	Description string      `bson:"description,omitempty"    json:"description,omitempty"`
-	Keywords    []string    `bson:"keywords,omitempty"       json:"keywords,omitempty"`
+	Keywords    *[]string   `bson:"keywords,omitempty"       json:"keywords,omitempty"`
+	LastUpdated *time.Time  `bson:"last_updated"             json:"-"`
 	Links       *TopicLinks `bson:"links,omitempty"          json:"links,omitempty"`
 	ReleaseDate *time.Time  `bson:"release_date,omitempty"   json:"release_date,omitempty"`
 	State       string      `bson:"state,omitempty"          json:"state,omitempty"`
-	SubtopicIds []string    `bson:"subtopics_ids,omitempty"  json:"subtopics_ids,omitempty"`
+	SubtopicIds *[]string   `bson:"subtopics_ids,omitempty"  json:"subtopics_ids,omitempty"`
 	Title       string      `bson:"title,omitempty"          json:"title,omitempty"`
 }
 
 // TopicUpdate represents the incoming request structure containing a topic update
 type TopicUpdate struct {
-	Description string   `bson:"description"              json:"description"`
-	Keywords    []string `bson:"keywords,omitempty"       json:"keywords,omitempty"`
-	ReleaseDate string   `bson:"release_date"             json:"release_date"`
-	State       string   `bson:"state"                    json:"state"`
-	SubtopicIds []string `bson:"subtopics_ids,omitempty"  json:"subtopics_ids,omitempty"`
-	Title       string   `bson:"title"                    json:"title"`
+	Description string    `bson:"description"              json:"description"`
+	Keywords    *[]string `bson:"keywords,omitempty"       json:"keywords,omitempty"`
+	ReleaseDate string    `bson:"release_date"             json:"release_date"`
+	State       string    `bson:"state"                    json:"state"`
+	SubtopicIds *[]string `bson:"subtopics_ids,omitempty"  json:"subtopics_ids,omitempty"`
+	Title       string    `bson:"title"                    json:"title"`
 }
 
 // TopicRelease represents the incoming request structure containing release content

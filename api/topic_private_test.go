@@ -273,7 +273,7 @@ func TestPutTopicsPrivateHandler(t *testing.T) {
 				CheckTopicExistsFunc: func(ctx context.Context, id string) error {
 					return nil
 				},
-				UpdateTopicDataFunc: func(context.Context, string, *models.TopicUpdate) error {
+				UpdateTopicFunc: func(context.Context, string, string, *models.TopicUpdate) error {
 					return nil
 				},
 				GetTopicFunc: func(ctx context.Context, id string) (*models.TopicResponse, error) {
@@ -288,7 +288,7 @@ func TestPutTopicsPrivateHandler(t *testing.T) {
 						return nil, apierrors.ErrTopicNotFound
 					}
 				},
-				UpdateTopicFunc: func(context.Context, string, *models.TopicResponse) error {
+				UpsertTopicFunc: func(context.Context, string, *models.TopicResponse) error {
 					return nil
 				},
 			}
@@ -308,7 +308,7 @@ func TestPutTopicsPrivateHandler(t *testing.T) {
 				Convey("Then the response should be a 200 and the database should be called", func() {
 					So(w.Code, ShouldEqual, http.StatusOK)
 					So(err, ShouldBeNil)
-					So(mongoDBMock.UpdateTopicDataCalls(), ShouldHaveLength, 1)
+					So(mongoDBMock.UpdateTopicCalls(), ShouldHaveLength, 1)
 				})
 			})
 
@@ -325,7 +325,7 @@ func TestPutTopicsPrivateHandler(t *testing.T) {
 				Convey("Then the response should be a 500 and the database should not be called", func() {
 					So(w.Code, ShouldEqual, http.StatusInternalServerError)
 					So(w.Body.String(), ShouldContainSubstring, apierrors.ErrInternalServer.Error())
-					So(len(mongoDBMock.UpdateTopicDataCalls()), ShouldEqual, 0)
+					So(len(mongoDBMock.UpdateTopicCalls()), ShouldEqual, 0)
 				})
 			})
 
@@ -342,7 +342,7 @@ func TestPutTopicsPrivateHandler(t *testing.T) {
 				Convey("Then the response should be a 400 and the database should not be called", func() {
 					So(w.Code, ShouldEqual, http.StatusBadRequest)
 					So(w.Body.String(), ShouldContainSubstring, apierrors.ErrTopicMissingFields.Error())
-					So(len(mongoDBMock.UpdateTopicDataCalls()), ShouldEqual, 0)
+					So(len(mongoDBMock.UpdateTopicCalls()), ShouldEqual, 0)
 				})
 			})
 		})
@@ -352,7 +352,7 @@ func TestPutTopicsPrivateHandler(t *testing.T) {
 				CheckTopicExistsFunc: func(ctx context.Context, id string) error {
 					return apierrors.ErrTopicNotFound
 				},
-				UpdateTopicDataFunc: func(context.Context, string, *models.TopicUpdate) error {
+				UpdateTopicFunc: func(context.Context, string, string, *models.TopicUpdate) error {
 					return nil
 				},
 			}
@@ -372,7 +372,7 @@ func TestPutTopicsPrivateHandler(t *testing.T) {
 
 				So(w.Body.String(), ShouldContainSubstring, apierrors.ErrTopicNotFound.Error())
 
-				So(len(mongoDBMock.UpdateTopicDataCalls()), ShouldEqual, 0)
+				So(len(mongoDBMock.UpdateTopicCalls()), ShouldEqual, 0)
 			})
 		})
 	})

@@ -23,8 +23,8 @@ type dataMongoDB interface {
 	GetContent(ctx context.Context, id string, queryTypeFlags int) (*models.ContentResponse, error)
 	UpdateReleaseDate(ctx context.Context, id string, releaseDate time.Time) error
 	UpdateState(ctx context.Context, id, state string) error
-	UpdateTopic(ctx context.Context, id string, topic *models.TopicResponse) error
-	UpdateTopicData(ctx context.Context, id string, topic *models.TopicUpdate) error
+	UpsertTopic(ctx context.Context, id string, topic *models.TopicResponse) error
+	UpdateTopic(ctx context.Context, host, id string, topic *models.TopicUpdate) error
 }
 
 // MongoDB represents all the required methods from mongo DB

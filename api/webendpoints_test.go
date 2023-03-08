@@ -10,8 +10,6 @@ import (
 
 	dprequest "github.com/ONSdigital/dp-net/request"
 	"github.com/ONSdigital/dp-topic-api/config"
-	"github.com/ONSdigital/dp-topic-api/mocks"
-	"github.com/ONSdigital/dp-topic-api/store"
 	storetest "github.com/ONSdigital/dp-topic-api/store/mock"
 
 	"github.com/gorilla/mux"
@@ -19,8 +17,9 @@ import (
 )
 
 var (
-	mu          sync.Mutex
-	testContext = context.Background()
+	mu              sync.Mutex
+	testContext     = context.Background()
+	testTopicAPIURL = "http://localhost:1234"
 )
 
 func TestPublishedSubnetEndpointsAreDisabled(t *testing.T) {
@@ -47,7 +46,7 @@ func TestPublishedSubnetEndpointsAreDisabled(t *testing.T) {
 
 				w := httptest.NewRecorder()
 				mockedDataStore := &storetest.StorerMock{}
-				api := GetWebAPIWithMocks(testContext, cfg, mockedDataStore, nil)
+				api := GetAPIWithMocks(cfg, mockedDataStore)
 
 				api.Router.ServeHTTP(w, request)
 
@@ -59,15 +58,13 @@ func TestPublishedSubnetEndpointsAreDisabled(t *testing.T) {
 
 func TestSetup(t *testing.T) {
 	Convey("Given an API instance", t, func() {
-		permissions := mocks.NewAuthHandlerMock()
-
 		Convey("When created in Publishing mode", func() {
 			cfg, err := config.Get()
 			So(err, ShouldBeNil)
 			cfg.EnablePrivateEndpoints = true
 			mockedDataStore := &storetest.StorerMock{}
 
-			api := GetWebAPIWithMocks(testContext, cfg, mockedDataStore, permissions)
+			api := GetAPIWithMocks(cfg, mockedDataStore)
 
 			Convey("When created the following routes should have been added", func() {
 				So(api, ShouldNotBeNil)
@@ -87,7 +84,7 @@ func TestSetup(t *testing.T) {
 
 			mockedDataStore := &storetest.StorerMock{}
 
-			api := GetWebAPIWithMocks(testContext, cfg, mockedDataStore, permissions)
+			api := GetAPIWithMocks(cfg, mockedDataStore)
 
 			Convey("Then the following routes should have been added", func() {
 				So(api, ShouldNotBeNil)
@@ -99,14 +96,6 @@ func TestSetup(t *testing.T) {
 			})
 		})
 	})
-}
-
-// GetWebAPIWithMocks also used in other tests, so exported
-func GetWebAPIWithMocks(ctx context.Context, cfg *config.Config, mockedDataStore store.Storer, permissions AuthHandler) *API {
-	mu.Lock()
-	defer mu.Unlock()
-
-	return Setup(ctx, cfg, mux.NewRouter(), store.DataStore{Backend: mockedDataStore}, permissions)
 }
 
 func hasRoute(r *mux.Router, path, method string) bool {
