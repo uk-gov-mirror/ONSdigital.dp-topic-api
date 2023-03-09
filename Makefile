@@ -20,46 +20,42 @@ audit:
 	go list -m all | nancy sleuth
 	
 .PHONY: build
-build:
+build: ## Builds binary of application code and stores in bin directory as dp-topic-api
 	go build -tags 'production' $(LDFLAGS) -o $(BINPATH)/dp-topic-api
 
+.PHONY: convey
+convey: ## Runs unit test suite and outputs results on http://127.0.0.1:8080/
+	goconvey ./...
+
 .PHONY: debug
-debug:
+debug: ## Used to run code locally in debug mode
 	go build -tags 'debug' $(LDFLAGS) -o $(BINPATH)/dp-topic-api
 	HUMAN_LOG=1 DEBUG=1 $(BINPATH)/dp-topic-api
-
-.PHONY: debug-run
-debug-run:
-	HUMAN_LOG=1 DEBUG=1 go run -tags 'debug' $(LDFLAGS) main.go
 
 .PHONY: delimiter-%
 delimiter-%:
 	@echo '===================${GREEN} $* ${RESET}==================='
 
+.PHONY: fmt
+fmt: ## Run Go formatting on code
+	go fmt ./...
+
+.PHONY: lint
+lint: ## Used in ci to run linters against Go code
+	golangci-lint run ./...
+
 .PHONY: lint-local
-lint-local:
+lint-local: ## Use locally to run linters against Go code
 	go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.50.1
 	golangci-lint run ./...
 
-.PHONY: lint
-lint:
-	golangci-lint run ./...
-
 .PHONY: test
-test:
+test: ## Runs unit tests including checks for race conditions and returns coverage
 	go test -race -cover -tags 'production' ./...
 
 .PHONY: test-component
-test-component:
+test-component: ## Runs component test suite
 	go test -race -cover -coverprofile="coverage.txt" -coverpkg=github.com/ONSdigital/dp-topic-api/... -component
-
-.PHONY: convey
-convey:
-	goconvey ./...
-
-.PHONY: fmt
-fmt:
-	go fmt ./...
 
 .PHONY: help
 help: ## Show help page for list of make targets
