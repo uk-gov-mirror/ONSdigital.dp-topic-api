@@ -3,11 +3,7 @@ package api
 import (
 	"fmt"
 
-	"github.com/ONSdigital/dp-topic-api/config"
-	"github.com/ONSdigital/dp-topic-api/mocks"
 	"github.com/ONSdigital/dp-topic-api/models"
-	"github.com/ONSdigital/dp-topic-api/store"
-	"github.com/gorilla/mux"
 )
 
 // Constants for testing
@@ -22,7 +18,7 @@ func dbTopicWithID(state models.State, id string) *models.TopicResponse {
 			ID:          id,
 			Description: "next test description - 1",
 			Title:       "test title - 1",
-			Keywords:    []string{"keyword 1", "keyword 2", "keyword 3"},
+			Keywords:    &[]string{"keyword 1", "keyword 2", "keyword 3"},
 			State:       state.String(),
 			Links: &models.TopicLinks{
 				Self: &models.LinkObject{
@@ -41,7 +37,7 @@ func dbTopicWithID(state models.State, id string) *models.TopicResponse {
 			ID:          id,
 			Description: "current test description - 1",
 			Title:       "test title - 1",
-			Keywords:    []string{"keyword 1", "keyword 2", "keyword 3"},
+			Keywords:    &[]string{"keyword 1", "keyword 2", "keyword 3"},
 			State:       state.String(),
 			Links: &models.TopicLinks{
 				Self: &models.LinkObject{
@@ -74,7 +70,7 @@ func dbTopicCurrentWithID(state models.State, id string) *models.Topic {
 		ID:          id,
 		Description: "current test description - 1",
 		Title:       "test title - 1",
-		Keywords:    []string{"keyword 1", "keyword 2", "keyword 3"},
+		Keywords:    &[]string{"keyword 1", "keyword 2", "keyword 3"},
 		State:       state.String(),
 		Links: &models.TopicLinks{
 			Self: &models.LinkObject{
@@ -116,7 +112,7 @@ func dbTopic1(state models.State) *models.TopicResponse {
 					HRef: "http://example.com/topics/1/subtopics",
 				},
 			},
-			SubtopicIds: []string{"2", "3"},
+			SubtopicIds: &[]string{"2", "3"},
 		},
 		Current: &models.Topic{
 			ID:    "1",
@@ -126,7 +122,7 @@ func dbTopic1(state models.State) *models.TopicResponse {
 					HRef: "http://example.com/topics/1/subtopics",
 				},
 			},
-			SubtopicIds: []string{"2", "3"},
+			SubtopicIds: &[]string{"2", "3"},
 		},
 	}
 }
@@ -144,7 +140,7 @@ func dbTopic2(state models.State) *models.TopicResponse {
 					HRef: "http://example.com/topics/2/subtopics",
 				},
 			},
-			SubtopicIds: []string{"4", "6"},
+			SubtopicIds: &[]string{"4", "6"},
 		},
 		Current: &models.Topic{
 			ID:    "2",
@@ -154,7 +150,7 @@ func dbTopic2(state models.State) *models.TopicResponse {
 					HRef: "http://example.com/topics/2/subtopics",
 				},
 			},
-			SubtopicIds: []string{"4", "6"},
+			SubtopicIds: &[]string{"4", "6"},
 		},
 	}
 }
@@ -172,7 +168,7 @@ func dbTopic3(state models.State) *models.TopicResponse {
 					HRef: "http://example.com/topics/3/subtopics",
 				},
 			},
-			SubtopicIds: []string{"5"},
+			SubtopicIds: &[]string{"5"},
 		},
 		Current: &models.Topic{
 			ID:    "3",
@@ -182,7 +178,7 @@ func dbTopic3(state models.State) *models.TopicResponse {
 					HRef: "http://example.com/topics/3/subtopics",
 				},
 			},
-			SubtopicIds: []string{"5"},
+			SubtopicIds: &[]string{"5"},
 		},
 	}
 }
@@ -211,15 +207,4 @@ func dbTopic4(state models.State) *models.TopicResponse {
 			},
 		},
 	}
-}
-
-// GetAPIWithMocks also used in other tests, so exported
-func GetAPIWithMocks(cfg *config.Config, mockedDataStore store.Storer) *API {
-	mu.Lock()
-	defer mu.Unlock()
-	//	urlBuilder := url.NewBuilder("http://example.com")
-
-	permissions := mocks.NewAuthHandlerMock()
-
-	return Setup(testContext, cfg, mux.NewRouter(), store.DataStore{Backend: mockedDataStore}, permissions)
 }

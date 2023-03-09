@@ -94,13 +94,13 @@ func (api *API) getSubtopicsPublicByID(ctx context.Context, id string, logdata l
 		return
 	}
 
-	if len(topic.Current.SubtopicIds) == 0 {
+	if topic.Current.SubtopicIds == nil || len(*topic.Current.SubtopicIds) == 0 {
 		// no subtopics exist for the requested ID
 		handleError(ctx, w, apierrors.ErrNotFound, logdata)
 		return
 	}
 
-	for _, subTopicID := range topic.Current.SubtopicIds {
+	for _, subTopicID := range *topic.Current.SubtopicIds {
 		// get sub topic from mongoDB by subTopicID
 		topic, err := api.dataStore.Backend.GetTopic(ctx, subTopicID)
 		if err != nil {

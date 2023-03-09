@@ -38,7 +38,7 @@ var (
 		ID:          "1234",
 		Description: "Root Topic 1",
 		Title:       "Root Topic 1",
-		Keywords:    []string{"test"},
+		Keywords:    &[]string{"test"},
 		State:       "published",
 	}
 
@@ -46,7 +46,7 @@ var (
 		ID:          "5678",
 		Description: "Root Topic 2",
 		Title:       "Root Topic 2",
-		Keywords:    []string{"test"},
+		Keywords:    &[]string{"test"},
 		State:       "published",
 	}
 

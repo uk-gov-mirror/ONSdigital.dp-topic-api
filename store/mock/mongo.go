@@ -21,6 +21,7 @@ var (
 	lockMongoDBMockUpdateReleaseDate sync.RWMutex
 	lockMongoDBMockUpdateState       sync.RWMutex
 	lockMongoDBMockUpdateTopic       sync.RWMutex
+	lockMongoDBMockUpsertTopic       sync.RWMutex
 )
 
 // Ensure, that MongoDBMock does implement store.MongoDB.
@@ -54,8 +55,11 @@ var _ store.MongoDB = &MongoDBMock{}
 //             UpdateStateFunc: func(ctx context.Context, id string, state string) error {
 // 	               panic("mock out the UpdateState method")
 //             },
-//             UpdateTopicFunc: func(ctx context.Context, id string, topic *models.TopicResponse) error {
+//             UpdateTopicFunc: func(ctx context.Context, host string, id string, topic *models.TopicUpdate) error {
 // 	               panic("mock out the UpdateTopic method")
+//             },
+//             UpsertTopicFunc: func(ctx context.Context, id string, topic *models.TopicResponse) error {
+// 	               panic("mock out the UpsertTopic method")
 //             },
 //         }
 //
@@ -86,7 +90,10 @@ type MongoDBMock struct {
 	UpdateStateFunc func(ctx context.Context, id string, state string) error
 
 	// UpdateTopicFunc mocks the UpdateTopic method.
-	UpdateTopicFunc func(ctx context.Context, id string, topic *models.TopicResponse) error
+	UpdateTopicFunc func(ctx context.Context, host string, id string, topic *models.TopicUpdate) error
+
+	// UpsertTopicFunc mocks the UpsertTopic method.
+	UpsertTopicFunc func(ctx context.Context, id string, topic *models.TopicResponse) error
 
 	// calls tracks calls to the methods.
 	calls struct {
@@ -145,6 +152,17 @@ type MongoDBMock struct {
 		}
 		// UpdateTopic holds details about calls to the UpdateTopic method.
 		UpdateTopic []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Host is the host argument value.
+			Host string
+			// ID is the id argument value.
+			ID string
+			// Topic is the topic argument value.
+			Topic *models.TopicUpdate
+		}
+		// UpsertTopic holds details about calls to the UpsertTopic method.
+		UpsertTopic []struct {
 			// Ctx is the ctx argument value.
 			Ctx context.Context
 			// ID is the id argument value.
@@ -409,9 +427,52 @@ func (mock *MongoDBMock) UpdateStateCalls() []struct {
 }
 
 // UpdateTopic calls UpdateTopicFunc.
-func (mock *MongoDBMock) UpdateTopic(ctx context.Context, id string, topic *models.TopicResponse) error {
+func (mock *MongoDBMock) UpdateTopic(ctx context.Context, host string, id string, topic *models.TopicUpdate) error {
 	if mock.UpdateTopicFunc == nil {
 		panic("MongoDBMock.UpdateTopicFunc: method is nil but MongoDB.UpdateTopic was just called")
+	}
+	callInfo := struct {
+		Ctx   context.Context
+		Host  string
+		ID    string
+		Topic *models.TopicUpdate
+	}{
+		Ctx:   ctx,
+		Host:  host,
+		ID:    id,
+		Topic: topic,
+	}
+	lockMongoDBMockUpdateTopic.Lock()
+	mock.calls.UpdateTopic = append(mock.calls.UpdateTopic, callInfo)
+	lockMongoDBMockUpdateTopic.Unlock()
+	return mock.UpdateTopicFunc(ctx, host, id, topic)
+}
+
+// UpdateTopicCalls gets all the calls that were made to UpdateTopic.
+// Check the length with:
+//     len(mockedMongoDB.UpdateTopicCalls())
+func (mock *MongoDBMock) UpdateTopicCalls() []struct {
+	Ctx   context.Context
+	Host  string
+	ID    string
+	Topic *models.TopicUpdate
+} {
+	var calls []struct {
+		Ctx   context.Context
+		Host  string
+		ID    string
+		Topic *models.TopicUpdate
+	}
+	lockMongoDBMockUpdateTopic.RLock()
+	calls = mock.calls.UpdateTopic
+	lockMongoDBMockUpdateTopic.RUnlock()
+	return calls
+}
+
+// UpsertTopic calls UpsertTopicFunc.
+func (mock *MongoDBMock) UpsertTopic(ctx context.Context, id string, topic *models.TopicResponse) error {
+	if mock.UpsertTopicFunc == nil {
+		panic("MongoDBMock.UpsertTopicFunc: method is nil but MongoDB.UpsertTopic was just called")
 	}
 	callInfo := struct {
 		Ctx   context.Context
@@ -422,16 +483,16 @@ func (mock *MongoDBMock) UpdateTopic(ctx context.Context, id string, topic *mode
 		ID:    id,
 		Topic: topic,
 	}
-	lockMongoDBMockUpdateTopic.Lock()
-	mock.calls.UpdateTopic = append(mock.calls.UpdateTopic, callInfo)
-	lockMongoDBMockUpdateTopic.Unlock()
-	return mock.UpdateTopicFunc(ctx, id, topic)
+	lockMongoDBMockUpsertTopic.Lock()
+	mock.calls.UpsertTopic = append(mock.calls.UpsertTopic, callInfo)
+	lockMongoDBMockUpsertTopic.Unlock()
+	return mock.UpsertTopicFunc(ctx, id, topic)
 }
 
-// UpdateTopicCalls gets all the calls that were made to UpdateTopic.
+// UpsertTopicCalls gets all the calls that were made to UpsertTopic.
 // Check the length with:
-//     len(mockedMongoDB.UpdateTopicCalls())
-func (mock *MongoDBMock) UpdateTopicCalls() []struct {
+//     len(mockedMongoDB.UpsertTopicCalls())
+func (mock *MongoDBMock) UpsertTopicCalls() []struct {
 	Ctx   context.Context
 	ID    string
 	Topic *models.TopicResponse
@@ -441,8 +502,8 @@ func (mock *MongoDBMock) UpdateTopicCalls() []struct {
 		ID    string
 		Topic *models.TopicResponse
 	}
-	lockMongoDBMockUpdateTopic.RLock()
-	calls = mock.calls.UpdateTopic
-	lockMongoDBMockUpdateTopic.RUnlock()
+	lockMongoDBMockUpsertTopic.RLock()
+	calls = mock.calls.UpsertTopic
+	lockMongoDBMockUpsertTopic.RUnlock()
 	return calls
 }

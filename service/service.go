@@ -82,7 +82,7 @@ func (svc *Service) Run(ctx context.Context, buildTime, gitCommit, version strin
 	// Set up the API
 	permissions := getAuthorisationHandlers(ctx, svc.Config)
 	s := store.DataStore{Backend: DatsetAPIStore{svc.mongoDB}}
-	svc.API = api.Setup(ctx, svc.Config, router, s, permissions)
+	svc.API = api.Setup(ctx, svc.Config, router, s, permissions, svc.Config.TopicAPIURL)
 
 	svc.HealthCheck.Start(ctx)
 

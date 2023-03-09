@@ -12,6 +12,7 @@ var (
 	ErrInternalServer                 = errors.New("internal error")
 	ErrInvalidReleaseDate             = errors.New("invalid topic release date, must have the following format: 2022-05-22T09:21:45Z")
 	ErrNotFound                       = errors.New("not found")
+	ErrTopicMissingFields             = errors.New("missing topic update mandatory fields")
 	ErrTopicInvalidState              = errors.New("topic state is not a valid state name")
 	ErrTopicNotFound                  = errors.New("topic not found")
 	ErrTopicStateTransitionNotAllowed = errors.New("topic state transition not allowed")

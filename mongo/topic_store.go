@@ -3,6 +3,7 @@ package mongo
 import (
 	"context"
 	"errors"
+	"fmt"
 	"time"
 
 	"github.com/ONSdigital/dp-healthcheck/healthcheck"
@@ -10,6 +11,7 @@ import (
 	errs "github.com/ONSdigital/dp-topic-api/apierrors"
 	"github.com/ONSdigital/dp-topic-api/config"
 	"github.com/ONSdigital/dp-topic-api/models"
+	"github.com/ONSdigital/log.go/v2/log"
 
 	mongohealth "github.com/ONSdigital/dp-mongodb/v3/health"
 	mongodriver "github.com/ONSdigital/dp-mongodb/v3/mongodb"
@@ -149,10 +151,7 @@ func (m *Mongo) GetContent(ctx context.Context, id string, queryTypeFlags int) (
 func (m *Mongo) UpdateReleaseDate(ctx context.Context, id string, releaseDate time.Time) error {
 	selector := bson.M{"id": id}
 	update := bson.M{
-		"$set": bson.M{"next.release_date": releaseDate},
-		"$setOnInsert": bson.M{
-			"last_updated": time.Now(),
-		},
+		"$set": bson.M{"next.release_date": releaseDate, "next.last_updated": time.Now()},
 	}
 
 	result, err := m.Connection.Collection(m.ActualCollectionName(config.TopicsCollection)).Update(ctx, selector, update)
@@ -171,10 +170,7 @@ func (m *Mongo) UpdateReleaseDate(ctx context.Context, id string, releaseDate ti
 func (m *Mongo) UpdateState(ctx context.Context, id, state string) error {
 	selector := bson.M{"id": id}
 	update := bson.M{
-		"$set": bson.M{"next.state": state},
-		"$setOnInsert": bson.M{
-			"last_updated": time.Now(),
-		},
+		"$set": bson.M{"next.state": state, "next.last_updated": time.Now()},
 	}
 
 	result, err := m.Connection.Collection(m.ActualCollectionName(config.TopicsCollection)).Update(ctx, selector, update)
@@ -189,16 +185,35 @@ func (m *Mongo) UpdateState(ctx context.Context, id, state string) error {
 	return nil
 }
 
-// UpdateTopic replaces the topic in mongodb with a new instance
-func (m *Mongo) UpdateTopic(ctx context.Context, id string, topic *models.TopicResponse) error {
-	// Update topic in mongo
+// UpsertTopic creates or overwrites an existing topic (based on id) in mongodb with a new document
+func (m *Mongo) UpsertTopic(ctx context.Context, id string, topic *models.TopicResponse) error {
+	// Topic to store in mongo
 	selector := bson.M{"id": id}
+
+	// Update the last updated timestamp
+	currentTime := time.Now()
+	topic.Current.LastUpdated = &currentTime
+	topic.Next.LastUpdated = &currentTime
 	update := bson.M{
 		"$set": topic,
-		"$setOnInsert": bson.M{
-			"last_updated": time.Now(),
-		},
 	}
+
+	result, err := m.Connection.Collection(m.ActualCollectionName(config.TopicsCollection)).Upsert(ctx, selector, update)
+	if err != nil {
+		return err
+	}
+
+	if result.MatchedCount == 0 {
+		return errs.ErrTopicNotFound
+	}
+
+	return nil
+}
+
+// UpdateTopic updates the next instance with new values.
+func (m *Mongo) UpdateTopic(ctx context.Context, host, id string, topic *models.TopicUpdate) error {
+	selector := bson.M{"id": id}
+	update := createTopicUpdateQuery(ctx, host, id, topic)
 
 	result, err := m.Connection.Collection(m.ActualCollectionName(config.TopicsCollection)).Update(ctx, selector, update)
 	if err != nil {
@@ -210,4 +225,48 @@ func (m *Mongo) UpdateTopic(ctx context.Context, id string, topic *models.TopicR
 	}
 
 	return nil
+}
+
+// Create TopicUpdateQuery builds the bson for the insert.
+func createTopicUpdateQuery(ctx context.Context, host, id string, topic *models.TopicUpdate) bson.M {
+	log.Info(ctx, "building update query for topic resource", log.Data{"topic_id": id, "topic": topic})
+
+	// ability to add mandatory fields to existing resource using the set query parameter
+	setFields := bson.M{
+		"next.description":        topic.Description,
+		"next.last_updated":       time.Now(),
+		"next.links.content.href": fmt.Sprintf("%s/topics/%s/content", host, id),
+		"next.links.self.href":    fmt.Sprintf("%s/topics/%s", host, id),
+		"next.links.self.id":      id,
+		"next.release_date":       topic.ReleaseDate,
+		"next.state":              topic.State,
+		"next.title":              topic.Title,
+	}
+
+	// ability to remove optional fields from existing resource using the unset query parameter
+	unsetFields := bson.M{}
+
+	if topic.Keywords != nil && len(*topic.Keywords) > 0 {
+		setFields["next.keywords"] = topic.Keywords
+	} else {
+		unsetFields["next.keywords"] = ""
+	}
+
+	if topic.SubtopicIds != nil && len(*topic.SubtopicIds) > 0 {
+		setFields["next.subtopics_ids"] = topic.SubtopicIds
+		setFields["next.links.subtopics.href"] = fmt.Sprintf("%s/topics/%s/subtopics", host, id)
+	} else {
+		unsetFields["next.subtopics_ids"] = ""
+		unsetFields["next.links.subtopics"] = nil // remove subtopics link object due to no subtopics available for this topic
+	}
+
+	update := bson.M{"$set": setFields}
+
+	if len(unsetFields) > 0 {
+		update["$unset"] = unsetFields
+	}
+
+	log.Info(ctx, "built update query for topic resource", log.Data{"topic_id": id, "topic": topic, "update": update})
+
+	return update
 }

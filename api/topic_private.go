@@ -83,13 +83,13 @@ func (api *API) getSubtopicsPrivateByID(ctx context.Context, id string, logdata 
 		return
 	}
 
-	if len(topic.Next.SubtopicIds) == 0 {
+	if topic.Next.SubtopicIds == nil || len(*topic.Next.SubtopicIds) == 0 {
 		// no subtopics exist for the requested ID
 		handleError(ctx, w, apierrors.ErrNotFound, logdata)
 		return
 	}
 
-	for _, subTopicID := range topic.Next.SubtopicIds {
+	for _, subTopicID := range *topic.Next.SubtopicIds {
 		// get topic from mongoDB by subTopicID
 		topic, err := api.dataStore.Backend.GetTopic(ctx, subTopicID)
 		if err != nil {
@@ -168,29 +168,9 @@ func (api *API) putTopicStatePrivateHandler(w http.ResponseWriter, req *http.Req
 	}
 
 	if state == models.StatePublished.String() {
-		// TODO - should lock resource, put this in a mongo db transaction or use eTags to
-		// check if the resource has changed since initial request - as it is not a public
-		// endpoint and is not currently used by the publishing system we can ignore this for
-		// now
 		log.Info(ctx, "attempting to publish topic", logdata)
-
-		// get topic
-		topic, err := api.dataStore.Backend.GetTopic(ctx, id)
-		if err != nil {
+		if err := api.publishTopic(ctx, id); err != nil {
 			handleError(ctx, w, err, logdata)
-			return
-		}
-
-		// set next state
-		topic.Next.State = state
-
-		// update local copy of topic
-		newTopic := syncNextAndCurrentTopic(topic)
-
-		// update topic in mongo db
-		if err := api.dataStore.Backend.UpdateTopic(ctx, id, newTopic); err != nil {
-			handleError(ctx, w, err, logdata)
-			return
 		}
 	} else {
 		// update topic next.state in mongo db
@@ -203,6 +183,75 @@ func (api *API) putTopicStatePrivateHandler(w http.ResponseWriter, req *http.Req
 	w.WriteHeader(http.StatusOK)
 
 	log.Info(ctx, "request successful", logdata)
+}
+
+func (api *API) putTopicPrivateHandler(w http.ResponseWriter, req *http.Request) {
+	ctx := req.Context()
+	vars := mux.Vars(req)
+	id := vars["id"]
+	logdata := log.Data{
+		"topic_id": id,
+		"function": "putTopicPrivateHandler",
+	}
+
+	topicUpdate, err := models.ReadTopicUpdate(req.Body)
+	if err != nil {
+		handleError(ctx, w, err, logdata)
+		return
+	}
+
+	if err := topicUpdate.ValidateUpdate(); err != nil {
+		handleError(ctx, w, err, logdata)
+		return
+	}
+
+	if err := api.dataStore.Backend.CheckTopicExists(ctx, id); err != nil {
+		handleError(ctx, w, err, logdata)
+		return
+	}
+
+	// update topic in mongo db
+	if err := api.dataStore.Backend.UpdateTopic(ctx, api.topicAPIURL, id, topicUpdate); err != nil {
+		handleError(ctx, w, err, logdata)
+		return
+	}
+
+	if topicUpdate.State == models.StatePublished.String() {
+		log.Info(ctx, "attempting to publish topic", logdata)
+		if err := api.publishTopic(ctx, id); err != nil {
+			handleError(ctx, w, err, logdata)
+		}
+	}
+
+	w.WriteHeader(http.StatusOK)
+
+	log.Info(ctx, "request successful", logdata)
+}
+
+func (api *API) publishTopic(ctx context.Context, id string) error {
+	// TODO - should lock resource, put this in a mongo db transaction or use eTags to
+	// check if the resource has changed since initial request - as it is not a public
+	// endpoint and is not currently used by the publishing system we can ignore this for
+	// now
+
+	// get topic
+	topic, err := api.dataStore.Backend.GetTopic(ctx, id)
+	if err != nil {
+		return err
+	}
+
+	// set next state
+	topic.Next.State = models.StatePublished.String()
+
+	// update local copy of topic
+	newTopic := syncNextAndCurrentTopic(topic)
+
+	// update topic in mongo db
+	if err := api.dataStore.Backend.UpsertTopic(ctx, id, newTopic); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func syncNextAndCurrentTopic(topic *models.TopicResponse) *models.TopicResponse {
