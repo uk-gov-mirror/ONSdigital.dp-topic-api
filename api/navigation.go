@@ -111,6 +111,10 @@ var labels = map[string]map[string]string{
 		english: "People, population and community",
 		welsh:   "Pobl, y boblogaeth a chymunedau",
 	},
+	"armed-forces-community": {
+		english: "Armed forces community",
+		welsh:   "Armed forces community", // no translation yet
+	},
 	"births-deaths-and-marriages": {
 		english: "Births, deaths and marriages",
 		welsh:   "Genedigaethau, marwolaethau a phriodasau",
@@ -506,6 +510,19 @@ func getNavItems(lang string) (*[]models.TopicNonReferential, string) {
 			},
 			URI: "/peoplepopulationandcommunity",
 			SubtopicItems: &[]models.TopicNonReferential{
+				{
+					Description: "Information about the armed forces community, including those who have previously served in the armed forces (veterans) and their families, to help support the Armed Forces Covenant.",
+					Title:       "Armed forces community",
+					Links: &models.TopicLinks{
+						Self: &models.LinkObject{
+							ID:   "armedforcescommunity",
+							HRef: "/topics/armedforcescommunity",
+						},
+					},
+					URI:   "/peoplepopulationandcommunity/armedforcescommunity",
+					Name:  "armed-forces-community",
+					Label: labels["armed-forces-community"][lang],
+				},
 				{
 					Description: "Life events in the UK including fertility rates, live births and stillbirths, family composition, life expectancy and deaths. This tells us about the health and relationships of the population.",
 					Title:       "Births, deaths and marriages",
