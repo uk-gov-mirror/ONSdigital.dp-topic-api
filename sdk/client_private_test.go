@@ -38,6 +38,13 @@ var (
 	topicRelease = models.TopicRelease{
 		ReleaseDate: "2022-11-11T09:30:00Z",
 	}
+
+	topicUpdate = models.TopicUpdate{
+		Description: "New description",
+		ReleaseDate: "2022-11-11T09:30:00Z",
+		State:       "published",
+		Title:       "New title",
+	}
 )
 
 func TestGetRootTopicsPrivate(t *testing.T) {
@@ -313,6 +320,90 @@ func TestGetSubtopicsPrivate(t *testing.T) {
 	})
 }
 
+func TestPutTopicStatePrivate(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+
+	Convey("Given private put topic state is successful", t, func() {
+		httpClient := newMockHTTPClient(
+			&http.Response{
+				StatusCode: http.StatusOK,
+				Body:       nil,
+				Header:     nil,
+			},
+			nil)
+
+		topicAPIClient := newTopicAPIClient(t, httpClient)
+
+		Convey("When PutTopicStatePrivate is called", func() {
+			respInfo, err := topicAPIClient.PutTopicStatePrivate(ctx, Headers{
+				ServiceAuthToken: "valid-service-token",
+			}, "1357", "published")
+
+			Convey("Then it succeeds with no errors returned", func() {
+				So(err, ShouldBeNil)
+				So(respInfo, ShouldNotBeNil)
+				So(respInfo.Status, ShouldEqual, http.StatusOK)
+				So(respInfo.Body, ShouldBeNil)
+				So(respInfo.Headers, ShouldBeNil)
+			})
+
+			Convey("And client.Do should be called once with the expected parameters", func() {
+				doCalls := httpClient.DoCalls()
+				So(doCalls, ShouldHaveLength, 1)
+				So(doCalls[0].Req.URL.Path, ShouldEqual, "/topics/1357/state/published")
+			})
+		})
+	})
+
+	Convey("Given a 500 response from topic api", t, func() {
+		httpClient := newMockHTTPClient(&http.Response{StatusCode: http.StatusInternalServerError}, nil)
+		topicAPIClient := newTopicAPIClient(t, httpClient)
+
+		Convey("When PutTopicStatePrivate is called", func() {
+			respInfo, err := topicAPIClient.PutTopicStatePrivate(ctx, Headers{}, "1357", "published")
+
+			Convey("Then an error should be returned ", func() {
+				So(err, ShouldNotBeNil)
+				So(err.Status(), ShouldEqual, http.StatusInternalServerError)
+				So(respInfo, ShouldNotBeNil)
+				So(respInfo.Body, ShouldBeNil)
+				So(respInfo.Headers, ShouldBeNil)
+				So(respInfo.Status, ShouldEqual, http.StatusInternalServerError)
+			})
+
+			Convey("And client.Do should be called once with the expected parameters", func() {
+				doCalls := httpClient.DoCalls()
+				So(doCalls, ShouldHaveLength, 1)
+				So(doCalls[0].Req.URL.Path, ShouldEqual, "/topics/1357/state/published")
+			})
+		})
+	})
+
+	Convey("Given the client returns an unexpected error", t, func() {
+		clientError := errors.New("unexpected error")
+		httpClient := newMockHTTPClient(&http.Response{}, clientError)
+
+		topicAPIClient := newTopicAPIClient(t, httpClient)
+
+		Convey("When PutTopicStatePrivate is called", func() {
+			respInfo, err := topicAPIClient.PutTopicStatePrivate(ctx, Headers{}, "1357", "published")
+
+			Convey("Then an error should be returned ", func() {
+				So(err, ShouldNotBeNil)
+				So(err.Status(), ShouldEqual, http.StatusInternalServerError)
+				So(respInfo, ShouldBeNil)
+			})
+
+			Convey("And client.Do should be called once with the expected parameters", func() {
+				doCalls := httpClient.DoCalls()
+				So(doCalls, ShouldHaveLength, 1)
+				So(doCalls[0].Req.URL.Path, ShouldEqual, "/topics/1357/state/published")
+			})
+		})
+	})
+}
+
 func TestPutTopicReleasePrivate(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
@@ -397,6 +488,95 @@ func TestPutTopicReleasePrivate(t *testing.T) {
 				doCalls := httpClient.DoCalls()
 				So(doCalls, ShouldHaveLength, 1)
 				So(doCalls[0].Req.URL.Path, ShouldEqual, "/topics/1357/release-date")
+			})
+		})
+	})
+}
+
+func TestPutTopicPrivate(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+
+	body, err := json.Marshal(topicUpdate)
+	if err != nil {
+		t.Errorf("failed to setup test data, error: %v", err)
+	}
+
+	Convey("Given private put topic is successful", t, func() {
+		httpClient := newMockHTTPClient(
+			&http.Response{
+				StatusCode: http.StatusOK,
+				Body:       nil,
+				Header:     nil,
+			},
+			nil)
+
+		topicAPIClient := newTopicAPIClient(t, httpClient)
+
+		Convey("When PutTopicPrivate is called", func() {
+			respInfo, err := topicAPIClient.PutTopicPrivate(ctx, Headers{
+				ServiceAuthToken: "valid-service-token",
+			}, "1357", body)
+
+			Convey("Then it succeeds with no errors returned", func() {
+				So(err, ShouldBeNil)
+				So(respInfo, ShouldNotBeNil)
+				So(respInfo.Status, ShouldEqual, http.StatusOK)
+				So(respInfo.Body, ShouldBeNil)
+				So(respInfo.Headers, ShouldBeNil)
+			})
+
+			Convey("And client.Do should be called once with the expected parameters", func() {
+				doCalls := httpClient.DoCalls()
+				So(doCalls, ShouldHaveLength, 1)
+				So(doCalls[0].Req.URL.Path, ShouldEqual, "/topics/1357")
+			})
+		})
+	})
+
+	Convey("Given a 500 response from topic api", t, func() {
+		httpClient := newMockHTTPClient(&http.Response{StatusCode: http.StatusInternalServerError}, nil)
+		topicAPIClient := newTopicAPIClient(t, httpClient)
+
+		Convey("When PutTopicPrivate is called", func() {
+			respInfo, err := topicAPIClient.PutTopicPrivate(ctx, Headers{}, "1357", body)
+
+			Convey("Then an error should be returned ", func() {
+				So(err, ShouldNotBeNil)
+				So(err.Status(), ShouldEqual, http.StatusInternalServerError)
+				So(respInfo, ShouldNotBeNil)
+				So(respInfo.Body, ShouldBeNil)
+				So(respInfo.Headers, ShouldBeNil)
+				So(respInfo.Status, ShouldEqual, http.StatusInternalServerError)
+			})
+
+			Convey("And client.Do should be called once with the expected parameters", func() {
+				doCalls := httpClient.DoCalls()
+				So(doCalls, ShouldHaveLength, 1)
+				So(doCalls[0].Req.URL.Path, ShouldEqual, "/topics/1357")
+			})
+		})
+	})
+
+	Convey("Given the client returns an unexpected error", t, func() {
+		clientError := errors.New("unexpected error")
+		httpClient := newMockHTTPClient(&http.Response{}, clientError)
+
+		topicAPIClient := newTopicAPIClient(t, httpClient)
+
+		Convey("When PutTopicPrivate is called", func() {
+			respInfo, err := topicAPIClient.PutTopicPrivate(ctx, Headers{}, "1357", body)
+
+			Convey("Then an error should be returned ", func() {
+				So(err, ShouldNotBeNil)
+				So(err.Status(), ShouldEqual, http.StatusInternalServerError)
+				So(respInfo, ShouldBeNil)
+			})
+
+			Convey("And client.Do should be called once with the expected parameters", func() {
+				doCalls := httpClient.DoCalls()
+				So(doCalls, ShouldHaveLength, 1)
+				So(doCalls[0].Req.URL.Path, ShouldEqual, "/topics/1357")
 			})
 		})
 	})

@@ -73,6 +73,18 @@ func (cli *Client) GetSubtopicsPrivate(ctx context.Context, reqHeaders Headers, 
 type Result struct {
 }
 
+// PutTopicStatePrivate inserts the state into the topic next object and publishes if it is published
+func (cli *Client) PutTopicStatePrivate(ctx context.Context, reqHeaders Headers, id, state string) (*ResponseInfo, apiError.Error) {
+	path := fmt.Sprintf("%s/topics/%s/state/%s", cli.hcCli.URL, id, state)
+
+	respInfo, apiErr := cli.callTopicAPI(ctx, path, http.MethodPut, reqHeaders, nil)
+	if apiErr != nil {
+		return respInfo, apiErr
+	}
+
+	return respInfo, nil
+}
+
 // PutTopicReleasePrivate inserts the release date into the topic next object ready for publishing
 func (cli *Client) PutTopicReleasePrivate(ctx context.Context, reqHeaders Headers, id string, payload []byte) (*ResponseInfo, apiError.Error) {
 	path := fmt.Sprintf("%s/topics/%s/release-date", cli.hcCli.URL, id)
@@ -83,6 +95,18 @@ func (cli *Client) PutTopicReleasePrivate(ctx context.Context, reqHeaders Header
 	}
 
 	fmt.Printf("got here last with: %v", respInfo)
+
+	return respInfo, nil
+}
+
+// PutTopicPrivate inserts update into the topic next object and publishes if it is published
+func (cli *Client) PutTopicPrivate(ctx context.Context, reqHeaders Headers, id string, payload []byte) (*ResponseInfo, apiError.Error) {
+	path := fmt.Sprintf("%s/topics/%s", cli.hcCli.URL, id)
+
+	respInfo, apiErr := cli.callTopicAPI(ctx, path, http.MethodPut, reqHeaders, payload)
+	if apiErr != nil {
+		return respInfo, apiErr
+	}
 
 	return respInfo, nil
 }
