@@ -27,6 +27,6 @@ func TestNavigationGetNavigationHandler(t *testing.T) {
 		api.getNavigationHandler(w, request)
 		So(w.Code, ShouldEqual, http.StatusOK)
 		So(w.Header(), ShouldNotBeEmpty)
-		So(w.Header().Get("Cache-Control"), ShouldEqual, "public, max-age=1800.000000")
+		So(w.Header().Get("Cache-Control"), ShouldEqual, "public, max-age=1800")
 	})
 }

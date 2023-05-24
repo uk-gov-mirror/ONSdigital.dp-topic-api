@@ -20,7 +20,7 @@ type Config struct {
 	HealthCheckInterval        time.Duration `envconfig:"HEALTHCHECK_INTERVAL"`
 	MongoConfig
 	NavigationCacheMaxAge time.Duration `envconfig:"NAVIGATION_CACHE_MAX_AGE"`
-	TopicAPIURL           string        `envconfig:"NAVIGATION_CACHE_MAX_AGE"`
+	TopicAPIURL           string        `envconfig:""`
 	ZebedeeURL            string        `envconfig:"ZEBEDEE_URL"`
 }
 

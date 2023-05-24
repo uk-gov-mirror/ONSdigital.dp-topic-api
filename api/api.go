@@ -45,7 +45,7 @@ func Setup(ctx context.Context, cfg *config.Config, router *mux.Router, dataStor
 		Router:                 router,
 		dataStore:              dataStore,
 		enablePrivateEndpoints: cfg.EnablePrivateEndpoints,
-		navigationCacheMaxAge:  fmt.Sprintf("%f", cfg.NavigationCacheMaxAge.Seconds()),
+		navigationCacheMaxAge:  fmt.Sprintf("%.0f", cfg.NavigationCacheMaxAge.Seconds()),
 		permissions:            permissions,
 		topicAPIURL:            topicAPIURL,
 	}
