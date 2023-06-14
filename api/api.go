@@ -18,10 +18,10 @@ import (
 )
 
 var (
-	createPermission = auth.Permissions{Create: true}
+	// createPermission = auth.Permissions{Create: true}
 	readPermission   = auth.Permissions{Read: true}
 	updatePermission = auth.Permissions{Update: true}
-	deletePermission = auth.Permissions{Delete: true}
+	// deletePermission = auth.Permissions{Delete: true}
 )
 
 // AuthHandler provides authorisation checks on requests
