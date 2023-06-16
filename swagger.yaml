@@ -52,6 +52,23 @@ parameters:
     schema:
       $ref: "#/definitions/TopicUpdate"
 paths:
+  /topics/:
+    get:
+      tags:
+        - "Public"
+      summary: "Get a lists of topics"
+      description: "gets a public list of top level root topics"
+      produces:
+        - "application/json"
+      responses:
+        200:
+          description: "Json object containing a list of all available topics"
+          schema:
+            $ref: '#/definitions/ListOfTopics'
+        404:
+          description: "Topic not found"
+        500:
+          $ref: '#/responses/InternalError'
   /topics/{id}:
     get:
       tags:
