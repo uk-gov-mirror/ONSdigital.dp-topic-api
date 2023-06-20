@@ -247,7 +247,8 @@ func (api *API) publishTopic(ctx context.Context, id string) error {
 	newTopic := syncNextAndCurrentTopic(topic)
 
 	// update topic in mongo db
-	if err := api.dataStore.Backend.UpsertTopic(ctx, id, newTopic); err != nil {
+	err = api.dataStore.Backend.UpsertTopic(ctx, id, newTopic)
+	if err != nil {
 		return err
 	}
 

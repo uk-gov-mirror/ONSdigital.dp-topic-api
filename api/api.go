@@ -66,7 +66,7 @@ func Setup(ctx context.Context, cfg *config.Config, router *mux.Router, dataStor
 }
 
 // enablePublicEndpoints register only the public GET endpoints.
-func (api *API) enablePublicEndpoints(ctx context.Context) {
+func (api *API) enablePublicEndpoints(_ context.Context) {
 	api.get("/navigation", api.getNavigationHandler)
 	api.get("/topics", api.getRootTopicsPublicHandler)
 	api.get("/topics/{id}", api.getTopicPublicHandler)
@@ -76,7 +76,7 @@ func (api *API) enablePublicEndpoints(ctx context.Context) {
 
 // enablePrivateTopicEndpoints register the topics endpoints with the appropriate authentication and authorisation
 // checks required when running the topic API in publishing (private) mode.
-func (api *API) enablePrivateTopicEndpoints(ctx context.Context) {
+func (api *API) enablePrivateTopicEndpoints(_ context.Context) {
 	api.get(
 		"/topics/{id}",
 		api.isAuthenticated(

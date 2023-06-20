@@ -40,7 +40,7 @@ func TestGetTopicPublicHandler(t *testing.T) {
 			topicAPI := GetAPIWithMocks(cfg, mongoDBMock)
 
 			Convey("When an existing 'published' topic is requested with the valid Topic-Id context value", func() {
-				request := httptest.NewRequest(http.MethodGet, fmt.Sprintf("http://localhost:25300/topics/%s", testTopicID1), nil)
+				request := httptest.NewRequest(http.MethodGet, fmt.Sprintf("http://localhost:25300/topics/%s", testTopicID1), http.NoBody)
 
 				w := httptest.NewRecorder()
 				topicAPI.Router.ServeHTTP(w, request)
@@ -56,7 +56,7 @@ func TestGetTopicPublicHandler(t *testing.T) {
 			})
 
 			Convey("Requesting an nonexistent topic ID results in a NotFound response", func() {
-				request := httptest.NewRequest(http.MethodGet, "http://localhost:25300/topics/inexistent", nil)
+				request := httptest.NewRequest(http.MethodGet, "http://localhost:25300/topics/inexistent", http.NoBody)
 				w := httptest.NewRecorder()
 				topicAPI.Router.ServeHTTP(w, request)
 				So(w.Code, ShouldEqual, http.StatusNotFound)
@@ -92,7 +92,7 @@ func TestGetSubtopicsPublicHandler(t *testing.T) {
 
 			// 1 has subtopics & points to 2 & 3
 			Convey("When an existing 'published' subtopic is requested with the valid Topic-Id value 1", func() {
-				request := httptest.NewRequest(http.MethodGet, "http://localhost:25300/topics/1/subtopics", nil)
+				request := httptest.NewRequest(http.MethodGet, "http://localhost:25300/topics/1/subtopics", http.NoBody)
 
 				w := httptest.NewRecorder()
 				topicAPI.Router.ServeHTTP(w, request)
@@ -111,7 +111,7 @@ func TestGetSubtopicsPublicHandler(t *testing.T) {
 
 			// 2 has subtopics & points to 4, 6 (but ID 6 does not exist)
 			Convey("When an existing 'published' subtopic is requested with the valid Topic-Id value 2", func() {
-				request := httptest.NewRequest(http.MethodGet, "http://localhost:25300/topics/2/subtopics", nil)
+				request := httptest.NewRequest(http.MethodGet, "http://localhost:25300/topics/2/subtopics", http.NoBody)
 
 				w := httptest.NewRecorder()
 				topicAPI.Router.ServeHTTP(w, request)
@@ -129,7 +129,7 @@ func TestGetSubtopicsPublicHandler(t *testing.T) {
 
 			// 3 has subtopics, but the ID 5 in the list does not exist
 			Convey("When an existing 'published' subtopic is requested with the valid Topic-Id value 3", func() {
-				request := httptest.NewRequest(http.MethodGet, "http://localhost:25300/topics/3/subtopics", nil)
+				request := httptest.NewRequest(http.MethodGet, "http://localhost:25300/topics/3/subtopics", http.NoBody)
 
 				w := httptest.NewRecorder()
 				topicAPI.Router.ServeHTTP(w, request)
@@ -143,7 +143,7 @@ func TestGetSubtopicsPublicHandler(t *testing.T) {
 
 			// 4 has NO subtopics, so is an end node that has a content link
 			Convey("When an existing 'published' subtopic is requested with the valid Topic-Id value 4", func() {
-				request := httptest.NewRequest(http.MethodGet, "http://localhost:25300/topics/4/subtopics", nil)
+				request := httptest.NewRequest(http.MethodGet, "http://localhost:25300/topics/4/subtopics", http.NoBody)
 
 				w := httptest.NewRecorder()
 				topicAPI.Router.ServeHTTP(w, request)
@@ -156,7 +156,7 @@ func TestGetSubtopicsPublicHandler(t *testing.T) {
 			})
 
 			Convey("Requesting an nonexistent topic ID results in a NotFound response", func() {
-				request := httptest.NewRequest(http.MethodGet, "http://localhost:25300/topics/inexistent/subtopics", nil)
+				request := httptest.NewRequest(http.MethodGet, "http://localhost:25300/topics/inexistent/subtopics", http.NoBody)
 				w := httptest.NewRecorder()
 				topicAPI.Router.ServeHTTP(w, request)
 				So(w.Code, ShouldEqual, http.StatusNotFound)
@@ -164,7 +164,7 @@ func TestGetSubtopicsPublicHandler(t *testing.T) {
 
 			// topic_root for test uses dbTopic1 which has subtopics & points to 2 & 3
 			Convey("When an existing 'published' /topics/topic_root/subtopics document is requested", func() {
-				request := httptest.NewRequest(http.MethodGet, "http://localhost:25300/topics/topic_root/subtopics", nil)
+				request := httptest.NewRequest(http.MethodGet, "http://localhost:25300/topics/topic_root/subtopics", http.NoBody)
 
 				w := httptest.NewRecorder()
 				topicAPI.Router.ServeHTTP(w, request)
@@ -204,7 +204,7 @@ func TestGetTopicsListPublicHandler(t *testing.T) {
 
 			// topic_root for test uses dbTopic1 which has subtopics & points to 2 & 3
 			Convey("When an existing 'published' /topics list is requested", func() {
-				request := httptest.NewRequest(http.MethodGet, "http://localhost:25300/topics", nil)
+				request := httptest.NewRequest(http.MethodGet, "http://localhost:25300/topics", http.NoBody)
 
 				w := httptest.NewRecorder()
 				topicAPI.Router.ServeHTTP(w, request)
@@ -223,7 +223,7 @@ func TestGetTopicsListPublicHandler(t *testing.T) {
 
 			// topic_root for test uses dbTopic1 which has subtopics & points to 2 & 3
 			Convey("When an existing 'published' /topics/topic_root document is requested", func() {
-				request := httptest.NewRequest(http.MethodGet, "http://localhost:25300/topics/topic_root", nil)
+				request := httptest.NewRequest(http.MethodGet, "http://localhost:25300/topics/topic_root", http.NoBody)
 
 				w := httptest.NewRecorder()
 				topicAPI.Router.ServeHTTP(w, request)

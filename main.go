@@ -36,7 +36,6 @@ func main() {
 
 	if err := run(ctx); err != nil {
 		log.Fatal(ctx, "fatal runtime error", err)
-		os.Exit(1)
 	}
 }
 

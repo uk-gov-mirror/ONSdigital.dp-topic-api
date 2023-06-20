@@ -289,7 +289,7 @@ var mongoContentJSONResponse4 = "{\"id\": \"5\", \"current\": {\"spotlight\": [ 
 
 // =======
 
-func dbContentWithID(state models.State, id string) *models.ContentResponse {
+func dbContentWithID(_ models.State, id string) *models.ContentResponse {
 	var response models.ContentResponse
 
 	switch id {
@@ -402,7 +402,7 @@ func TestGetContentPublicHandler(t *testing.T) {
 			topicAPI := GetAPIWithMocks(cfg, mongoDBMock)
 
 			Convey("When an existing 'published' content is requested with the valid Topic-Id context value", func() {
-				request := httptest.NewRequest(http.MethodGet, fmt.Sprintf("http://localhost:25300/topics/%s/content", ctestContentID1), nil)
+				request := httptest.NewRequest(http.MethodGet, fmt.Sprintf("http://localhost:25300/topics/%s/content", ctestContentID1), http.NoBody)
 
 				w := httptest.NewRecorder()
 				topicAPI.Router.ServeHTTP(w, request)
@@ -426,7 +426,7 @@ func TestGetContentPublicHandler(t *testing.T) {
 			})
 
 			Convey("When an existing 'published' content (with no current) is requested with the valid Topic-Id context value", func() {
-				request := httptest.NewRequest(http.MethodGet, fmt.Sprintf("http://localhost:25300/topics/%s/content", ctestContentID2), nil)
+				request := httptest.NewRequest(http.MethodGet, fmt.Sprintf("http://localhost:25300/topics/%s/content", ctestContentID2), http.NoBody)
 
 				w := httptest.NewRecorder()
 				topicAPI.Router.ServeHTTP(w, request)
@@ -439,7 +439,7 @@ func TestGetContentPublicHandler(t *testing.T) {
 			})
 
 			Convey("When an existing 'published' content (with no items in current) is requested with the valid Topic-Id context value", func() {
-				request := httptest.NewRequest(http.MethodGet, fmt.Sprintf("http://localhost:25300/topics/%s/content", ctestContentID3), nil)
+				request := httptest.NewRequest(http.MethodGet, fmt.Sprintf("http://localhost:25300/topics/%s/content", ctestContentID3), http.NoBody)
 
 				w := httptest.NewRecorder()
 				topicAPI.Router.ServeHTTP(w, request)
@@ -453,7 +453,7 @@ func TestGetContentPublicHandler(t *testing.T) {
 
 			// the following two tests cover different failure modes and code coverage in 'getContentPublicHandler'
 			Convey("Requesting an nonexistent content & topic ID results in a NotFound response (topic read fails)", func() {
-				request := httptest.NewRequest(http.MethodGet, "http://localhost:25300/topics/inexistent/content", nil)
+				request := httptest.NewRequest(http.MethodGet, "http://localhost:25300/topics/inexistent/content", http.NoBody)
 				w := httptest.NewRecorder()
 				topicAPI.Router.ServeHTTP(w, request)
 				So(w.Code, ShouldEqual, http.StatusNotFound)
@@ -463,7 +463,7 @@ func TestGetContentPublicHandler(t *testing.T) {
 			})
 
 			Convey("Requesting an nonexistent content ID results in a NotFound response (content read fails)", func() {
-				request := httptest.NewRequest(http.MethodGet, fmt.Sprintf("http://localhost:25300/topics/%s/content", ctestContentID5), nil)
+				request := httptest.NewRequest(http.MethodGet, fmt.Sprintf("http://localhost:25300/topics/%s/content", ctestContentID5), http.NoBody)
 				w := httptest.NewRecorder()
 				topicAPI.Router.ServeHTTP(w, request)
 				So(w.Code, ShouldEqual, http.StatusNotFound)
@@ -473,7 +473,7 @@ func TestGetContentPublicHandler(t *testing.T) {
 			})
 
 			Convey("When an existing 'published' content is requested with the valid Topic-Id context value for a query type: spotlight", func() {
-				request := httptest.NewRequest(http.MethodGet, fmt.Sprintf("http://localhost:25300/topics/%s/content?type=spotlight", ctestContentID7), nil)
+				request := httptest.NewRequest(http.MethodGet, fmt.Sprintf("http://localhost:25300/topics/%s/content?type=spotlight", ctestContentID7), http.NoBody)
 
 				w := httptest.NewRecorder()
 				topicAPI.Router.ServeHTTP(w, request)
@@ -503,7 +503,7 @@ func TestGetContentPublicHandler(t *testing.T) {
 			})
 
 			Convey("When an existing 'published' content is requested with the valid Topic-Id context value for a query type: articles", func() {
-				request := httptest.NewRequest(http.MethodGet, fmt.Sprintf("http://localhost:25300/topics/%s/content?type=articles", ctestContentID7), nil)
+				request := httptest.NewRequest(http.MethodGet, fmt.Sprintf("http://localhost:25300/topics/%s/content?type=articles", ctestContentID7), http.NoBody)
 
 				w := httptest.NewRecorder()
 				topicAPI.Router.ServeHTTP(w, request)
@@ -520,7 +520,7 @@ func TestGetContentPublicHandler(t *testing.T) {
 			})
 
 			Convey("When an existing 'published' content is requested with the valid Topic-Id context value for a query type: bulletins", func() {
-				request := httptest.NewRequest(http.MethodGet, fmt.Sprintf("http://localhost:25300/topics/%s/content?type=bulletins", ctestContentID7), nil)
+				request := httptest.NewRequest(http.MethodGet, fmt.Sprintf("http://localhost:25300/topics/%s/content?type=bulletins", ctestContentID7), http.NoBody)
 
 				w := httptest.NewRecorder()
 				topicAPI.Router.ServeHTTP(w, request)
@@ -537,7 +537,7 @@ func TestGetContentPublicHandler(t *testing.T) {
 			})
 
 			Convey("When an existing 'published' content is requested with the valid Topic-Id context value for a query type: methodologies", func() {
-				request := httptest.NewRequest(http.MethodGet, fmt.Sprintf("http://localhost:25300/topics/%s/content?type=methodologies", ctestContentID7), nil)
+				request := httptest.NewRequest(http.MethodGet, fmt.Sprintf("http://localhost:25300/topics/%s/content?type=methodologies", ctestContentID7), http.NoBody)
 
 				w := httptest.NewRecorder()
 				topicAPI.Router.ServeHTTP(w, request)
@@ -554,7 +554,7 @@ func TestGetContentPublicHandler(t *testing.T) {
 			})
 
 			Convey("When an existing 'published' content is requested with the valid Topic-Id context value for a query type: methodologyarticles", func() {
-				request := httptest.NewRequest(http.MethodGet, fmt.Sprintf("http://localhost:25300/topics/%s/content?type=methodologyarticles", ctestContentID7), nil)
+				request := httptest.NewRequest(http.MethodGet, fmt.Sprintf("http://localhost:25300/topics/%s/content?type=methodologyarticles", ctestContentID7), http.NoBody)
 
 				w := httptest.NewRecorder()
 				topicAPI.Router.ServeHTTP(w, request)
@@ -571,7 +571,7 @@ func TestGetContentPublicHandler(t *testing.T) {
 			})
 
 			Convey("When an existing 'published' content is requested with the valid Topic-Id context value for a query type: staticdatasets", func() {
-				request := httptest.NewRequest(http.MethodGet, fmt.Sprintf("http://localhost:25300/topics/%s/content?type=staticdatasets", ctestContentID7), nil)
+				request := httptest.NewRequest(http.MethodGet, fmt.Sprintf("http://localhost:25300/topics/%s/content?type=staticdatasets", ctestContentID7), http.NoBody)
 
 				w := httptest.NewRecorder()
 				topicAPI.Router.ServeHTTP(w, request)
@@ -588,7 +588,7 @@ func TestGetContentPublicHandler(t *testing.T) {
 			})
 
 			Convey("When an existing 'published' content is requested with the valid Topic-Id context value for a query with wrong type: fred", func() {
-				request := httptest.NewRequest(http.MethodGet, fmt.Sprintf("http://localhost:25300/topics/%s/content?type=fred", ctestContentID7), nil)
+				request := httptest.NewRequest(http.MethodGet, fmt.Sprintf("http://localhost:25300/topics/%s/content?type=fred", ctestContentID7), http.NoBody)
 
 				w := httptest.NewRecorder()
 				topicAPI.Router.ServeHTTP(w, request)
@@ -601,7 +601,7 @@ func TestGetContentPublicHandler(t *testing.T) {
 			})
 
 			Convey("When an existing 'published' content is requested with the valid Topic-Id context value for a query type: publications", func() {
-				request := httptest.NewRequest(http.MethodGet, fmt.Sprintf("http://localhost:25300/topics/%s/content?type=publications", ctestContentID7), nil)
+				request := httptest.NewRequest(http.MethodGet, fmt.Sprintf("http://localhost:25300/topics/%s/content?type=publications", ctestContentID7), http.NoBody)
 
 				w := httptest.NewRecorder()
 				topicAPI.Router.ServeHTTP(w, request)
@@ -628,7 +628,7 @@ func TestGetContentPublicHandler(t *testing.T) {
 			})
 
 			Convey("When an existing 'published' content is requested with the valid Topic-Id context value for a query type: datasets", func() {
-				request := httptest.NewRequest(http.MethodGet, fmt.Sprintf("http://localhost:25300/topics/%s/content?type=datasets", ctestContentID7), nil)
+				request := httptest.NewRequest(http.MethodGet, fmt.Sprintf("http://localhost:25300/topics/%s/content?type=datasets", ctestContentID7), http.NoBody)
 
 				w := httptest.NewRecorder()
 				topicAPI.Router.ServeHTTP(w, request)
@@ -651,7 +651,7 @@ func TestGetContentPublicHandler(t *testing.T) {
 			})
 
 			Convey("When an existing 'published' content is requested with the valid Topic-Id context value for a query type: articles AND prefix and postfix spaces in query", func() {
-				request := httptest.NewRequest(http.MethodGet, fmt.Sprintf("http://localhost:25300/topics/%s/content?type=%%20articles%%20", ctestContentID7), nil)
+				request := httptest.NewRequest(http.MethodGet, fmt.Sprintf("http://localhost:25300/topics/%s/content?type=%%20articles%%20", ctestContentID7), http.NoBody)
 
 				w := httptest.NewRecorder()
 				topicAPI.Router.ServeHTTP(w, request)
@@ -668,7 +668,7 @@ func TestGetContentPublicHandler(t *testing.T) {
 			})
 
 			Convey("When an existing 'published' content is requested with the valid Topic-Id context value for a query type: spotlight AND page has not content", func() {
-				request := httptest.NewRequest(http.MethodGet, fmt.Sprintf("http://localhost:25300/topics/%s/content?type=spotlight", ctestContentID8), nil)
+				request := httptest.NewRequest(http.MethodGet, fmt.Sprintf("http://localhost:25300/topics/%s/content?type=spotlight", ctestContentID8), http.NoBody)
 
 				w := httptest.NewRecorder()
 				topicAPI.Router.ServeHTTP(w, request)

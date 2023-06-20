@@ -80,7 +80,7 @@ func newMockHTTPClient(r *http.Response, err error) *dphttp.ClienterMock {
 	}
 }
 
-func newTopicAPIClient(t *testing.T, httpClient *dphttp.ClienterMock) *Client {
+func newTopicAPIClient(_ *testing.T, httpClient *dphttp.ClienterMock) *Client {
 	healthClient := healthcheck.NewClientWithClienter(service, testHost, httpClient)
 	return NewWithHealthClient(healthClient)
 }
