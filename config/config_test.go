@@ -26,7 +26,7 @@ func TestConfig(t *testing.T) {
 				So(config.BindAddr, ShouldEqual, "localhost:25300")
 				So(cfg.EnablePrivateEndpoints, ShouldEqual, false)
 				So(cfg.EnablePermissionsAuth, ShouldBeFalse)
-				So(config.GracefulShutdownTimeout, ShouldEqual, 10*time.Second)
+				So(config.GracefulShutdownTimeout, ShouldEqual, 5*time.Second)
 				So(config.HealthCheckInterval, ShouldEqual, 30*time.Second)
 				So(config.HealthCheckCriticalTimeout, ShouldEqual, 90*time.Second)
 
