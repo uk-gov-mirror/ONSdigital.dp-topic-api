@@ -42,7 +42,7 @@ func Get() (*Config, error) {
 		BindAddr:                   "localhost:25300",
 		EnablePermissionsAuth:      false,
 		EnablePrivateEndpoints:     false,
-		GracefulShutdownTimeout:    5 * time.Second,
+		GracefulShutdownTimeout:    10 * time.Second,
 		HealthCheckCriticalTimeout: 90 * time.Second,
 		HealthCheckInterval:        30 * time.Second,
 		MongoConfig: MongoConfig{

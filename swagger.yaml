@@ -57,16 +57,14 @@ paths:
       tags:
         - "Public"
       summary: "Get a lists of topics"
-      description: "gets a public list of top level root topics"
+      description: "Gets a public list of top level root topics"
       produces:
         - "application/json"
       responses:
         200:
-          description: "Json object containing a list of all available topics"
+          description: "Json object containing a list of all available root topics"
           schema:
             $ref: '#/definitions/ListOfTopics'
-        404:
-          description: "Topic not found"
         500:
           $ref: '#/responses/InternalError'
   /topics/{id}:
@@ -74,7 +72,7 @@ paths:
       tags:
         - "Public"
       summary: "Get a topic by ID"
-      description: "provides a high level description of the topic and relevant links"
+      description: "Provides a high level description of the topic and relevant links"
       parameters:
         - $ref: '#/parameters/id'
       produces:

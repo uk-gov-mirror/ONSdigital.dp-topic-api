@@ -26,8 +26,6 @@ require (
 	go.mongodb.org/mongo-driver v1.11.7
 )
 
-require github.com/hashicorp/go-uuid v1.0.3 // indirect
-
 require (
 	github.com/ONSdigital/dp-mongodb-in-memory v1.6.0 // indirect
 	github.com/ONSdigital/dp-rchttp v1.0.0 // indirect
