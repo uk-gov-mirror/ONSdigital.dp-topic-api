@@ -4,12 +4,12 @@ import (
 	"context"
 	"net/http"
 
-	clientsidentity "github.com/ONSdigital/dp-api-clients-go/identity"
+	clientsidentity "github.com/ONSdigital/dp-api-clients-go/v2/identity"
 	"github.com/ONSdigital/dp-authorisation/auth"
 	"github.com/justinas/alice"
 
-	dphandlers "github.com/ONSdigital/dp-net/handlers"
-	dphttp "github.com/ONSdigital/dp-net/http"
+	dphandlers "github.com/ONSdigital/dp-net/v2/handlers"
+	dphttp "github.com/ONSdigital/dp-net/v2/http"
 	"github.com/ONSdigital/dp-topic-api/api"
 	"github.com/ONSdigital/dp-topic-api/config"
 	"github.com/ONSdigital/dp-topic-api/store"

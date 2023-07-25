@@ -4,7 +4,7 @@ import (
 	"context"
 	"net/http"
 
-	dprequest "github.com/ONSdigital/dp-net/request"
+	dprequest "github.com/ONSdigital/dp-net/v2/request"
 	"github.com/ONSdigital/dp-topic-api/apierrors"
 	"github.com/ONSdigital/dp-topic-api/models"
 	"github.com/ONSdigital/log.go/v2/log"
@@ -247,7 +247,8 @@ func (api *API) publishTopic(ctx context.Context, id string) error {
 	newTopic := syncNextAndCurrentTopic(topic)
 
 	// update topic in mongo db
-	if err := api.dataStore.Backend.UpsertTopic(ctx, id, newTopic); err != nil {
+	err = api.dataStore.Backend.UpsertTopic(ctx, id, newTopic)
+	if err != nil {
 		return err
 	}
 

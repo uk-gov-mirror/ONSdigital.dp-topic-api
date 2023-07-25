@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ONSdigital/dp-api-clients-go/health"
+	"github.com/ONSdigital/dp-api-clients-go/v2/health"
 	"github.com/ONSdigital/dp-healthcheck/healthcheck"
 	"github.com/ONSdigital/dp-topic-api/config"
 	"github.com/ONSdigital/dp-topic-api/service"

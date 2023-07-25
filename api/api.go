@@ -9,7 +9,7 @@ import (
 	"net/http"
 
 	"github.com/ONSdigital/dp-authorisation/auth"
-	dphandlers "github.com/ONSdigital/dp-net/handlers"
+	dphandlers "github.com/ONSdigital/dp-net/v2/handlers"
 	"github.com/ONSdigital/dp-topic-api/apierrors"
 	"github.com/ONSdigital/dp-topic-api/config"
 	"github.com/ONSdigital/dp-topic-api/store"
@@ -17,6 +17,7 @@ import (
 	"github.com/gorilla/mux"
 )
 
+// nolint:unused // just for this block
 var (
 	createPermission = auth.Permissions{Create: true}
 	readPermission   = auth.Permissions{Read: true}
@@ -45,7 +46,7 @@ func Setup(ctx context.Context, cfg *config.Config, router *mux.Router, dataStor
 		Router:                 router,
 		dataStore:              dataStore,
 		enablePrivateEndpoints: cfg.EnablePrivateEndpoints,
-		navigationCacheMaxAge:  fmt.Sprintf("%f", cfg.NavigationCacheMaxAge.Seconds()),
+		navigationCacheMaxAge:  fmt.Sprintf("%.0f", cfg.NavigationCacheMaxAge.Seconds()),
 		permissions:            permissions,
 		topicAPIURL:            topicAPIURL,
 	}
@@ -54,19 +55,19 @@ func Setup(ctx context.Context, cfg *config.Config, router *mux.Router, dataStor
 		// create publishing related endpoints ...
 		log.Info(ctx, "enabling private endpoints for topic api")
 
-		api.enablePrivateTopicEndpoints(ctx)
+		api.enablePrivateTopicEndpoints()
 	} else {
 		// create web related endpoints ...
 
 		log.Info(ctx, "enabling only public endpoints for topic api")
-		api.enablePublicEndpoints(ctx)
+		api.enablePublicEndpoints()
 	}
 
 	return api
 }
 
 // enablePublicEndpoints register only the public GET endpoints.
-func (api *API) enablePublicEndpoints(ctx context.Context) {
+func (api *API) enablePublicEndpoints() {
 	api.get("/navigation", api.getNavigationHandler)
 	api.get("/topics", api.getRootTopicsPublicHandler)
 	api.get("/topics/{id}", api.getTopicPublicHandler)
@@ -76,7 +77,7 @@ func (api *API) enablePublicEndpoints(ctx context.Context) {
 
 // enablePrivateTopicEndpoints register the topics endpoints with the appropriate authentication and authorisation
 // checks required when running the topic API in publishing (private) mode.
-func (api *API) enablePrivateTopicEndpoints(ctx context.Context) {
+func (api *API) enablePrivateTopicEndpoints() {
 	api.get(
 		"/topics/{id}",
 		api.isAuthenticated(
