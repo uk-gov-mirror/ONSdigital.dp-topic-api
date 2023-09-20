@@ -56,7 +56,7 @@ var _ sdk.Clienter = &ClienterMock{}
 //			PutTopicReleasePrivateFunc: func(ctx context.Context, reqHeaders sdk.Headers, id string, topicRelease []byte) (*sdk.ResponseInfo, apiError.Error) {
 //				panic("mock out the PutTopicReleasePrivate method")
 //			},
-//			PutTopicStatePrivateFunc: func(ctx context.Context, reqHeaders sdk.Headers, id string, topicState []byte) (*sdk.ResponseInfo, apiError.Error) {
+//			PutTopicStatePrivateFunc: func(ctx context.Context, reqHeaders sdk.Headers, id string, topicState string) (*sdk.ResponseInfo, apiError.Error) {
 //				panic("mock out the PutTopicStatePrivate method")
 //			},
 //			URLFunc: func() string {
@@ -103,7 +103,7 @@ type ClienterMock struct {
 	PutTopicReleasePrivateFunc func(ctx context.Context, reqHeaders sdk.Headers, id string, topicRelease []byte) (*sdk.ResponseInfo, apiError.Error)
 
 	// PutTopicStatePrivateFunc mocks the PutTopicStatePrivate method.
-	PutTopicStatePrivateFunc func(ctx context.Context, reqHeaders sdk.Headers, id string, topicState []byte) (*sdk.ResponseInfo, apiError.Error)
+	PutTopicStatePrivateFunc func(ctx context.Context, reqHeaders sdk.Headers, id string, topicState string) (*sdk.ResponseInfo, apiError.Error)
 
 	// URLFunc mocks the URL method.
 	URLFunc func() string
@@ -210,7 +210,7 @@ type ClienterMock struct {
 			// ID is the id argument value.
 			ID string
 			// TopicState is the topicState argument value.
-			TopicState []byte
+			TopicState string
 		}
 		// URL holds details about calls to the URL method.
 		URL []struct {
@@ -655,7 +655,7 @@ func (mock *ClienterMock) PutTopicReleasePrivateCalls() []struct {
 }
 
 // PutTopicStatePrivate calls PutTopicStatePrivateFunc.
-func (mock *ClienterMock) PutTopicStatePrivate(ctx context.Context, reqHeaders sdk.Headers, id string, topicState []byte) (*sdk.ResponseInfo, apiError.Error) {
+func (mock *ClienterMock) PutTopicStatePrivate(ctx context.Context, reqHeaders sdk.Headers, id string, topicState string) (*sdk.ResponseInfo, apiError.Error) {
 	if mock.PutTopicStatePrivateFunc == nil {
 		panic("ClienterMock.PutTopicStatePrivateFunc: method is nil but Clienter.PutTopicStatePrivate was just called")
 	}
@@ -663,7 +663,7 @@ func (mock *ClienterMock) PutTopicStatePrivate(ctx context.Context, reqHeaders s
 		Ctx        context.Context
 		ReqHeaders sdk.Headers
 		ID         string
-		TopicState []byte
+		TopicState string
 	}{
 		Ctx:        ctx,
 		ReqHeaders: reqHeaders,
@@ -684,13 +684,13 @@ func (mock *ClienterMock) PutTopicStatePrivateCalls() []struct {
 	Ctx        context.Context
 	ReqHeaders sdk.Headers
 	ID         string
-	TopicState []byte
+	TopicState string
 } {
 	var calls []struct {
 		Ctx        context.Context
 		ReqHeaders sdk.Headers
 		ID         string
-		TopicState []byte
+		TopicState string
 	}
 	mock.lockPutTopicStatePrivate.RLock()
 	calls = mock.calls.PutTopicStatePrivate
