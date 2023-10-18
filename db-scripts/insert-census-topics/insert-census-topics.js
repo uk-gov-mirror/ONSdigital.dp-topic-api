@@ -47,6 +47,22 @@ function makeId() {
     return result
 }
 
+function createRootTopic() {
+    return {
+        id: "topic_root",
+        current: {
+            id: "topic_root",
+            state: "published",
+            subtopics_ids: [],
+        },
+        next: {
+            id: "topic_root",
+            state: "published",
+            subtopics_ids: [],
+        }
+    }
+}
+
 function createTopic(title, description) {
     do {
         var id = makeId()
@@ -117,8 +133,16 @@ censusTopic.current.subtopics_ids = []
 // Add census topic to subtopics of root
 var rootTopicCursor = db.getCollection(topicsCollection).find({id:rootId})
 if (!rootTopicCursor.hasNext()) {
-    print("Error: Couldn't find the root topic")
-    quit(0)
+    print("Info: Couldn't find the root topic - creating one")
+    const rootTopic = createRootTopic()
+    print(JSON.stringify(rootTopic))
+    if (cfg.insert) {
+        db.getCollection(topicsCollection).insertOne(rootTopic)
+        rootTopicCursor = db.getCollection(topicsCollection).find({id:rootId})
+    } else {
+        print("Subsequent inserts will fail if you don't insert the root topic")
+        quit(0)
+    }
 }
 var rootTopic = rootTopicCursor.next()
 rootTopic.next.subtopics_ids.push(censusTopic.id)
