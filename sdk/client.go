@@ -219,8 +219,6 @@ func (cli *Client) callTopicAPI(ctx context.Context, path, method string, header
 		}
 	}
 
-	fmt.Printf("respInfo is: %v", respInfo)
-
 	return respInfo, nil
 }
 
