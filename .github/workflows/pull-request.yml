@@ -5,9 +5,11 @@ on:
 jobs:
   new_pull_request:
     runs-on: ubuntu-latest
-    name: New pull request opened
-    steps: 
-      - run: echo "A new pull request was opened"
+    name: Dump GitHub context
+    env:
+      GITHUB_CONTEXT: ${{ toJson(github) }}
+    steps:
+      - run: echo "$GITHUB_CONTEXT"
     # steps:
     # - name: Send GitHub trigger payload to Slack Workflow Builder
     #   id: slack
