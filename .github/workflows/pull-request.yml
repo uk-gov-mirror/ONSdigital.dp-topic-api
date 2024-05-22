@@ -10,17 +10,15 @@ jobs:
       GITHUB_CONTEXT: ${{ toJson(github) }}
     steps:
       - run: echo "$GITHUB_CONTEXT"
-      - name: Send GitHub trigger payload to Slack Workflow Builder
+      - name: Post to a Slack channel
         id: slack
         uses: slackapi/slack-github-action@v1.26.0
         with:
-          payload: |
-            {
-              "author": "${{ github.event.pull_request.user.login }}",
-              "title": "${{ github.event.pull_request.title }}",
-              "status": "${{ job.status }}",
-              "url": "${{ github.event.pull_request.html_url }}",
-              "repository": "funky funky"
-            }
+          # Slack channel id, channel name, or user id to post message.
+          # See also: https://api.slack.com/methods/chat.postMessage#channels
+          # You can pass in multiple channels to post to by providing a comma-delimited list of channel IDs.
+          channel-id: 'automation-test'
+          # For posting a simple plain text message
+          slack-message: "GitHub build result: ${{ job.status }}\n${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
         env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
