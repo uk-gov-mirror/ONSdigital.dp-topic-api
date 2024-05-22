@@ -243,6 +243,9 @@ definitions:
       title:
         type: string
         description: "The title of the topic"
+      slug:
+        type: string
+        description: "The slug of the topic"
       keywords:
         type: array
         items:
@@ -391,6 +394,7 @@ definitions:
     description: "Object containing topic data update"
     required: 
       - title
+      - slug
       - description
       - release_date
       - state
@@ -399,6 +403,10 @@ definitions:
         description: "The title of a topic"
         type: string
         example: "Business, Industry and Trade"
+      slug:
+        description: "The slug of a topic"
+        type: string
+        example: "businessindustryandtrade"
       description:
         description: "The description of a topic"
         type: string 
