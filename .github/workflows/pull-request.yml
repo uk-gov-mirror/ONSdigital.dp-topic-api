@@ -13,5 +13,14 @@ jobs:
       - name: Send GitHub trigger payload to Slack Workflow Builder
         id: slack
         uses: slackapi/slack-github-action@v1.26.0
+        with:
+          payload: |
+            {
+              "author": "${{ github.event.pull_request.user.login }}",
+              "title": "${{ github.event.pull_request.title }}",
+              "status": "${{ job.status }}",
+              "url": "${{ github.event.pull_request.html_url }}",
+              "repository": "funky funky"
+            }
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
