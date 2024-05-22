@@ -15,5 +15,6 @@ type TopicNonReferential struct {
 	Name          string                 `json:"name"`
 	SubtopicItems *[]TopicNonReferential `json:"subtopics,omitempty"`
 	Title         string                 `json:"title"`
+	Slug          string                 `json:"slug"`
 	URI           string                 `json:"uri"`
 }

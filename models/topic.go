@@ -50,6 +50,7 @@ type Topic struct {
 	State       string      `bson:"state,omitempty"          json:"state,omitempty"`
 	SubtopicIds *[]string   `bson:"subtopics_ids,omitempty"  json:"subtopics_ids,omitempty"`
 	Title       string      `bson:"title,omitempty"          json:"title,omitempty"`
+	Slug        string      `bson:"slug,omitempty"           json:"slug,omitempty"`
 }
 
 // TopicUpdate represents the incoming request structure containing a topic update
@@ -60,6 +61,7 @@ type TopicUpdate struct {
 	State       string    `bson:"state"                    json:"state"`
 	SubtopicIds *[]string `bson:"subtopics_ids,omitempty"  json:"subtopics_ids,omitempty"`
 	Title       string    `bson:"title"                    json:"title"`
+	Slug        string    `bson:"slug"                     json:"slug"`
 }
 
 // TopicRelease represents the incoming request structure containing release content

@@ -243,9 +243,11 @@ definitions:
       title:
         type: string
         description: "The title of the topic"
+        example: "Business, Industry and Trade"
       slug:
         type: string
         description: "The slug of the topic"
+        example: "businessindustryandtrade"
       keywords:
         type: array
         items:

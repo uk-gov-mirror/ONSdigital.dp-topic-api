@@ -18,6 +18,7 @@ func dbTopicWithID(state models.State, id string) *models.TopicResponse {
 			ID:          id,
 			Description: "next test description - 1",
 			Title:       "test title - 1",
+			Slug:        "testtitle1",
 			Keywords:    &[]string{"keyword 1", "keyword 2", "keyword 3"},
 			State:       state.String(),
 			Links: &models.TopicLinks{
@@ -37,6 +38,7 @@ func dbTopicWithID(state models.State, id string) *models.TopicResponse {
 			ID:          id,
 			Description: "current test description - 1",
 			Title:       "test title - 1",
+			Slug:        "testtitle1",
 			Keywords:    &[]string{"keyword 1", "keyword 2", "keyword 3"},
 			State:       state.String(),
 			Links: &models.TopicLinks{
@@ -70,6 +72,7 @@ func dbTopicCurrentWithID(state models.State, id string) *models.Topic {
 		ID:          id,
 		Description: "current test description - 1",
 		Title:       "test title - 1",
+		Slug:        "testtitle1",
 		Keywords:    &[]string{"keyword 1", "keyword 2", "keyword 3"},
 		State:       state.String(),
 		Links: &models.TopicLinks{
