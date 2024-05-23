@@ -51,7 +51,7 @@ jobs:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
       - name: Store ts in file
         run: |
-          ${{ steps.slack.outputs.ts }} > pr_vars.txt
+          echo ${{ steps.slack.outputs.ts }} > pr_vars.txt
       - name: Upload ts for PR request message
         uses: actions/upload-artifact@v4
         with:
