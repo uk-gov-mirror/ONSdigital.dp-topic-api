@@ -54,3 +54,8 @@ jobs:
             }
         env:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+
+
+      - name: Set environment variables
+        run: |
+          echo "SLACK_PR_${{ github.event.pull_request.number }}=${{ steps.slack.outputs.ts }}" >> $GITHUB_ENV
