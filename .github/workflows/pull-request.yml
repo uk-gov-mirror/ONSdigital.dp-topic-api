@@ -61,3 +61,5 @@ jobs:
       - name: Set environment variables
         run: |
           echo "SLACK_PR_${{ github.event.pull_request.number }}=${{ steps.slack.outputs.ts }}" >> $GITHUB_ENV
+      - name: Test
+        run: echo $SLACK_PR_${{ github.event.pull_request.number }}
