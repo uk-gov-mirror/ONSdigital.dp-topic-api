@@ -9,6 +9,15 @@ jobs:
     env:
       GITHUB_CONTEXT: ${{ toJson(github) }}
     steps:
+      - name: Download pr message
+        uses: actions/download-artifact@v4
+        with:
+          name: SLACK_PR_${{ github.event.pull_request.number }}
+      - name: Print the result
+        shell: bash
+        run: |
+          ts=`cat pr_vars.txt`
+          echo The result is $ts
       - name: Test
         run: echo $SLACK_PR_${{ github.event.pull_request.number }}
       - run: echo "$GITHUB_CONTEXT"
@@ -56,10 +65,11 @@ jobs:
             }
         env:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
-
-
-      - name: Set environment variables
+      - name: Store ts in file
         run: |
-          echo "SLACK_PR_${{ github.event.pull_request.number }}=${{ steps.slack.outputs.ts }}" >> $GITHUB_ENV
-      - name: Test
-        run: echo $SLACK_PR_${{ github.event.pull_request.number }}
+          ${{ steps.slack.outputs.ts }} > pr_vars.txt
+      - name: Upload ts for PR request message
+        uses: actions/upload-artifact@v4
+        with:
+          name: SLACK_PR_${{ github.event.pull_request.number }}
+          path: pr_vars.txt
