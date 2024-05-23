@@ -9,6 +9,8 @@ jobs:
     env:
       GITHUB_CONTEXT: ${{ toJson(github) }}
     steps:
+      - name: Test
+        run: echo $SLACK_PR_${{ github.event.pull_request.number }}
       - run: echo "$GITHUB_CONTEXT"
       - name: Post to a Slack channel
         id: slack
