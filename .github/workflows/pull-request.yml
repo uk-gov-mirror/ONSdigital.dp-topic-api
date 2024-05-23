@@ -16,6 +16,7 @@ jobs:
           channel-id: "automation-test" #this should be env var
           payload: |
             {
+              "text": "New PR opened: *<${{github.event.pull_request.html_url}}|${{github.event.pull_request.html_url}}>*",
               "blocks": [
                 {
                   "type": "section",

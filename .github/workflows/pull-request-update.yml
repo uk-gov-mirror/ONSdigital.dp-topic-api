@@ -35,29 +35,8 @@ jobs:
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "New PR opened:\n*<${{github.event.pull_request.html_url}}|${{github.event.pull_request.html_url}}>*"
+                    "text": "PR Updated"
                   }
-                },
-                {
-                  "type": "section",
-                  "fields": [
-                    {
-                      "type": "mrkdwn",
-                      "text": "*Author:*\n${{github.event.pull_request.user.login}}"
-                    },
-                    {
-                      "type": "mrkdwn",
-                      "text": "*State:*\n${{github.event.pull_request.state}}"
-                    },
-                    {
-                      "type": "mrkdwn",
-                      "text": "*Title:*\n${{github.event.pull_request.title}}"
-                    },
-                    {
-                      "type": "mrkdwn",
-                      "text": "*Files Changed:*\n${{github.event.pull_request.changed_files}}"
-                    }
-                  ]
                 }
               ]
             }
