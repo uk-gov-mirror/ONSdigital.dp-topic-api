@@ -13,6 +13,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: SLACK_PR_${{ github.event.pull_request.number }}
+        if: always()
       - name: Print the result
         shell: bash
         run: |
