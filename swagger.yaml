@@ -52,7 +52,7 @@ parameters:
     schema:
       $ref: "#/definitions/TopicUpdate"
 paths:
-  /topics/:
+  /topics:
     get:
       tags:
         - "Public"
@@ -238,27 +238,18 @@ definitions:
     type: object
     properties:
       description:
-        type: string
         description: "A description of the topic"
-      title:
         type: string
-        description: "The title of the topic"
-        example: "Business, Industry and Trade"
-      slug:
+      id:
+        description: "The id of the topic"
         type: string
-        description: "The slug of the topic"
-        example: "businessindustryandtrade"
       keywords:
+        description: "List of keywords that relate to the topic"
         type: array
         items:
           type: string
-        description: "List of keywords that relate to the topic"
-      release_date:
-        type: string
-        description: "Release date of topic"
-      state:
-        $ref: '#/definitions/State'
       links:
+        description: "Links to the topic"
         type: object
         properties:
           self:
@@ -267,6 +258,21 @@ definitions:
             $ref: '#/definitions/SubtopicsLink'
           content:
             $ref: '#/definitions/ContentLink'
+      slug:
+        description: "The slug of the topic"        
+        type: string
+        example: "businessindustryandtrade"
+      state:
+        $ref: '#/definitions/State'
+      subtopics_ids:
+        description: "Array of subtopic ids"
+        type: array
+        items:
+          type: string
+      title:
+        description: "The title of the topic"
+        type: string
+        example: "Business, Industry and Trade"
   SubtopicsLink:
     type: object
     description: "A link to the subtopics of this topic"
@@ -301,18 +307,23 @@ definitions:
     type: object
     description: "A list of Topics"
     properties:
+      context:
+        description: "The URL to the context file"
+        type: string
+        example: "https://cdn.ons.gov.uk/assets/json-ld/context.json"
       count:
         $ref: '#/definitions/Count'
-      offset:
-        $ref: '#/definitions/Offset'
-      limit:
-        $ref: '#/definitions/Limit'
-      total_count:
-        $ref: '#/definitions/TotalCount'
       items:
+        description: "An array of topics"
         type: array
         items:
           $ref: '#/definitions/Topic'
+      limit:
+        $ref: '#/definitions/Limit'
+      offset_index:
+        $ref: '#/definitions/Offset'
+      total_count:
+        $ref: '#/definitions/TotalCount'
   SelfHref:
     type: object
     properties:
