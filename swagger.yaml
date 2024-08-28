@@ -219,12 +219,6 @@ definitions:
   Content:
     type: object
     properties:
-      title:
-        type: string
-        description: "title of the information"
-      type:
-        type: string
-        description: "Name of the containing type"
       links:
         type: object
         properties:
@@ -234,6 +228,12 @@ definitions:
             $ref: '#/definitions/TopicLink'
       state:
         $ref: '#/definitions/State'
+      title:
+        type: string
+        description: "title of the information"
+      type:
+        type: string
+        description: "Name of the containing type"
   Topic:
     type: object
     properties:
@@ -291,18 +291,23 @@ definitions:
     type: object
     description: "A list of Content items"
     properties:
+      context:
+        description: "The URL to the context file"
+        type: string
+        example: "https://cdn.ons.gov.uk/assets/json-ld/context.json"
       count:
         $ref: '#/definitions/Count'
-      offset:
-        $ref: '#/definitions/Offset'
-      limit:
-        $ref: '#/definitions/Limit'
-      total_count:
-        $ref: '#/definitions/TotalCount'
       items:
+        description: "An array of content items"
         type: array
         items:
           $ref: '#/definitions/Content'
+      limit:
+        $ref: '#/definitions/Limit'
+      offset_index:
+        $ref: '#/definitions/Offset'
+      total_count:
+        $ref: '#/definitions/TotalCount'
   ListOfTopics:
     type: object
     description: "A list of Topics"
