@@ -386,8 +386,18 @@ definitions:
     type: object
     description: "Resource describing the structure for the ONS website navbar."
     properties:
-      description:
+      context:
+        description: "The URL to the context file"
         type: string
+        example: "https://cdn.ons.gov.uk/assets/json-ld/context.json"
+      description:
+        description: "A description of the navigation"
+        type: string
+      items:
+        description: "An array of navigation items"
+        type: array
+        items:
+          $ref: '#/definitions/ListOfNavigationItems'
       links:
         type: object
         properties:
@@ -397,8 +407,6 @@ definitions:
               href:
                 type: string
                 description: "The URL to the resource"
-      items:
-        $ref: '#/definitions/ListOfNavigationItems'
   TopicRelease:
     type: object
     description: "Object containing topic release details"
@@ -462,10 +470,9 @@ definitions:
               $ref: '#/definitions/SelfHref'
         name:
           $ref: '#/definitions/Name'
-        title:
-          $ref: '#/definitions/Title'
-        uri:
-          $ref: '#/definitions/Uri'
+        slug:
+          description: "The slug of the item"
+          type: string
         subtopics:
           type: array
           items:
@@ -481,7 +488,14 @@ definitions:
                     $ref: '#/definitions/SelfHref'
               name:
                 $ref: '#/definitions/Name'
+              slug:
+                description: "The slug of the item"        
+                type: string
               title:
                 $ref: '#/definitions/Title'
               uri:
                 $ref: '#/definitions/Uri'
+        title:
+          $ref: '#/definitions/Title'
+        uri:
+          $ref: '#/definitions/Uri'
