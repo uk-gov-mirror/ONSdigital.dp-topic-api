@@ -1,8 +1,7 @@
 swagger: "2.0"
 info:
-  title: dp-topic-api
-  description: "This service is used to retrieve information about the Topic's used
-  to categorize ONS data"
+  title: Topic API
+  description: "This service is used to retrieve information about the Topic's used to categorise ONS data"
   version: 1.0.0
   license:
     name: "Open Government Licence v3.0"
@@ -16,16 +15,18 @@ tags:
 parameters:
   id:
     name: id
-    description: "The ID of a topic"
     in: path
-    type: string
     required: true
-  content_options:
-    description: "An option to select a subset of the possible types of content returned; can be one of: spotlight, articles, bulletins, methodologies, methodologyarticles, staticdatasets, timeseries, publications or datasets"
-    name: "<type>"
+    description: "The ID of a topic."
+    type: string
+    example: "1234"
+  type:
+    description: "An option to select a subset of the possible types of content returned."
+    name: type
     in: query
     required: false
     type: string
+    enum: ["spotlight", "articles", "bulletins", "methodologies", "methodologyarticles", "staticdatasets", "timeseries", "publications", "datasets"]
   lang:
     name: lang
     description: "the 2 character code of the language required in returned labels, e.g. cy for welsh"
@@ -56,60 +57,63 @@ paths:
     get:
       tags:
         - "Public"
-      summary: "Get a lists of topics"
-      description: "Gets a public list of top level root topics"
+      summary: "Get a list of topics"
+      description: "Gets a public list of top-level root topics."
       produces:
         - "application/json"
       responses:
         200:
-          description: "Json object containing a list of all available root topics"
+          description: "JSON object containing a list of all available root topics."
           schema:
             $ref: '#/definitions/ListOfTopics'
         500:
           $ref: '#/responses/InternalError'
+
   /topics/{id}:
     get:
       tags:
         - "Public"
       summary: "Get a topic by ID"
-      description: "Provides a high level description of the topic and relevant links"
+      description: "Provides a high-level description of the topic and relevant links."
       parameters:
         - $ref: '#/parameters/id'
       produces:
         - "application/json"
       responses:
         200:
-          description: "Json object containing information about the topic"
+          description: "JSON object containing information about the topic."
           schema:
             $ref: '#/definitions/Topic'
         404:
-          description: "Topic not found"
+          $ref: '#/responses/NotFound'
         500:
           $ref: '#/responses/InternalError'
+
     put:
       tags:
         - "Private"
       summary: "Update the topic details"
-      description: "Updates topics details for the next nested object"
+      description: "Updates topics details for the next nested object."
       parameters:
         - $ref: '#/parameters/id'
         - $ref: '#/parameters/topic_update'
       responses:
         200:
           description: "Success"
+        400:
+          $ref: '#/responses/BadRequest'
         401:
           $ref: '#/responses/Unauthorised'
         404:
-          description: "Topic not found"
-        400:
-          description: "Invalid topic details"
+          $ref: '#/responses/NotFound'
         500:
           $ref: '#/responses/InternalError'
+
   /topics/{id}/release-date:
     put:
       tags:
         - "Private"
-      summary: "Update the topic release_date"
+      summary: "Update the topic release date"
       description: "Updates a topics release date against the next nested object. Unavailable to view by public endpoints until published, ('next' object overwrites 'current' object)"
       parameters:
         - $ref: '#/parameters/id'
@@ -117,10 +121,12 @@ paths:
       responses:
         200:
           description: "Success"
+        400:
+          $ref: '#/responses/BadRequest'
         401:
           $ref: '#/responses/Unauthorised'
         404:
-          description: "Topic not found"
+          description: '#/responses/NotFound'
         400:
           description: | 
             Bad request, messages could be 1 of the following:
@@ -128,67 +134,71 @@ paths:
             * invalid topic release date, must use **RFC3339** format
         500:
           $ref: '#/responses/InternalError'
+
   /topics/{id}/state/{state}:
     put:
       tags:
         - "Private"
       summary: "Update the topic state"
-      description: "Updates a topics state against the next nested object. If state is equal to 'published' than the next object copies over to current object"
+      description: "Updates a topic's state against the next nested object. If state is equal to 'published', than the next object copies over to current object"
       parameters:
         - $ref: '#/parameters/id'
         - $ref: '#/parameters/state'
       responses:
         200:
           description: "Success"
+        400:
+          $ref: '#/responses/BadRequest'
         401:
           $ref: '#/responses/Unauthorised'
         404:
-          description: "Topic not found"
-        400:
-          description: "topic state is not a valid state name"
+          $ref: '#/responses/NotFound'
         500:
-          $ref: '#/responses/InternalError' 
+          $ref: '#/responses/InternalError'
+
   /topics/{id}/subtopics:
     get:
       tags:
         - "Public"
       summary: "Get a list of subtopics"
-      description: "Get a list of all documents for ID contained in the stored list of subtopics"
+      description: "Get a list of all documents for the specified ID contained in the stored list of subtopics."
       parameters:
         - $ref: '#/parameters/id'
       produces:
         - "application/json"
       responses:
         200:
-          description: "Json object containing an array of subtopics"
+          description: "JSON object containing an array of subtopics."
           schema:
             $ref: '#/definitions/ListOfTopics'
         404:
-          description: "Topic not found"
+          $ref: '#/responses/NotFound'
         500:
           $ref: '#/responses/InternalError'
+
   /topics/{id}/content:
     get:
       tags:
         - "Public"
       summary: "Get a list of content"
-      description: "Get a list of different content types of all documents for ID"
+      description: "Get a list of different content types for the specified ID."
       parameters:
         - $ref: '#/parameters/id'
-        - $ref: '#/parameters/content_options'
+        - $ref: '#/parameters/type'
       produces:
         - "application/json"
       responses:
         200:
-          description: "Json object containing an array(s) of content types"
+          description: "JSON object containing an array(s) of content types."
           schema:
             $ref: '#/definitions/ListOfContent'
         400:
-          description: "content query not recognised"
+          $ref: '#/responses/BadRequest'
         404:
-          description: "Content not found"
+          $ref: '#/responses/NotFound'
         500:
           $ref: '#/responses/InternalError'
+
   /navigation:
     get:
       tags:
@@ -201,20 +211,29 @@ paths:
         - $ref: '#/parameters/lang'
       responses:
         200:
-          description: "Provides a hierarchical list of navigation items with their links, copy and localisation references"
+          description: "Provides a hierarchical list of navigation items with their links, copy, and localization references."
           schema:
             $ref: '#/definitions/Navigation'
           headers:
             Cache-Control:
-              default:  "public, max-age=1800"
+              default: "public, max-age=1800"
               type: string
+              description: "Caching information for the response."
         500:
           $ref: '#/responses/InternalError'
 responses:
   InternalError:
-    description: "Failed to process the request due to an internal error"
+    description: "Failed to process the request due to an internal error."
+
   Unauthorised:
-    description: "Failed to process the request due to being unauthorised"
+    description: "Failed to process the request due to being unauthorised."
+
+  NotFound:
+    description: "The specified resource was not found."
+
+  BadRequest:
+    description: "The request was invalid."
+
 definitions:
   Content:
     type: object
@@ -230,26 +249,26 @@ definitions:
         $ref: '#/definitions/State'
       title:
         type: string
-        description: "title of the information"
+        description: "Title of the information."
       type:
         type: string
-        description: "Name of the containing type"
+        description: "Name of the containing type."
+
   Topic:
     type: object
     properties:
       description:
-        description: "A description of the topic"
         type: string
+        description: "A description of the topic."
       id:
-        description: "The id of the topic"
         type: string
+        description: "The ID of the topic."
       keywords:
-        description: "List of keywords that relate to the topic"
         type: array
         items:
           type: string
+        description: "List of keywords that relate to the topic."
       links:
-        description: "Links to the topic"
         type: object
         properties:
           self:
@@ -259,46 +278,48 @@ definitions:
           content:
             $ref: '#/definitions/ContentLink'
       slug:
-        description: "The slug of the topic"        
         type: string
+        description: "The slug of the topic."
         example: "businessindustryandtrade"
       state:
         $ref: '#/definitions/State'
       subtopics_ids:
-        description: "Array of subtopic ids"
         type: array
         items:
           type: string
+        description: "Array of subtopic IDs."
       title:
-        description: "The title of the topic"
         type: string
+        description: "The title of the topic."
         example: "Business, Industry and Trade"
+
   SubtopicsLink:
     type: object
-    description: "A link to the subtopics of this topic"
+    description: "A link to the subtopics of this topic."
     properties:
       href:
         type: string
-        description: "A URL to the subtopics of this topic"
+        description: "A URL to the subtopics of this topic."
+
   ContentLink:
     type: object
-    description: "A link to the content for this topic"
+    description: "A link to the content for this topic."
     properties:
       href:
         type: string
-        description: "A URL to the content for this topic"
+        description: "A URL to the content for this topic."
+
   ListOfContent:
     type: object
-    description: "A list of Content items"
+    description: "A list of content items."
     properties:
       context:
-        description: "The URL to the context file"
         type: string
+        description: "The URL to the context file."
         example: "https://cdn.ons.gov.uk/assets/json-ld/context.json"
       count:
         $ref: '#/definitions/Count'
       items:
-        description: "An array of content items"
         type: array
         items:
           $ref: '#/definitions/Content'
@@ -308,18 +329,18 @@ definitions:
         $ref: '#/definitions/Offset'
       total_count:
         $ref: '#/definitions/TotalCount'
+
   ListOfTopics:
     type: object
-    description: "A list of Topics"
+    description: "A list of topics."
     properties:
       context:
-        description: "The URL to the context file"
         type: string
+        description: "The URL to the context file."
         example: "https://cdn.ons.gov.uk/assets/json-ld/context.json"
       count:
         $ref: '#/definitions/Count'
       items:
-        description: "An array of topics"
         type: array
         items:
           $ref: '#/definitions/Topic'
@@ -329,41 +350,48 @@ definitions:
         $ref: '#/definitions/Offset'
       total_count:
         $ref: '#/definitions/TotalCount'
+
   SelfHref:
     type: object
     properties:
       id:
         type: string
-        description: "The id of the resource"
+        description: "The ID of the resource."
       href:
         type: string
-        description: "The URL to the resource"
+        description: "The URL to the resource."
+
   State:
-    description: |
-      The state of the resource, can only be one of the following:
-        * created
-        * published
-        * completed
     type: string
+    description: "The state of the resource."
+    enum:
+      - created
+      - published
+      - completed
+
   TopicLink:
     type: object
-    description: "A link to the topic for this content"
+    description: "A link to the topic for this content."
     properties:
       href:
         type: string
-        description: "The URL to the topic"
+        description: "The URL to the topic."
       id:
         type: string
-        description: "The id for the topic that this content is associated with"
+        description: "The ID for the topic that this content is associated with."
+
   Count:
     type: integer
-    description: "The number of results returned in this response"
+    description: "The number of results returned in this response."
+
   TotalCount:
     type: integer
-    description: "The total number of results available"
+    description: "The total number of results available."
+
   Limit:
     type: integer
-    description: "The limit applied to the number of results returned"
+    description: "The limit applied to the number of results returned."
+
   Offset:
     type: integer
     description: "The offset applied to the number of results returned"
@@ -409,16 +437,18 @@ definitions:
                 description: "The URL to the resource"
   TopicRelease:
     type: object
-    description: "Object containing topic release details"
+    description: "Object containing topic release details."
     properties:
       release_date:
-        description: "The release date formatted to abide by RFC3339"
         type: string
+        format: date-time
+        description: "The release date formatted to abide by RFC3339."
         example: "2022-10-10T08:30:00Z"
+
   TopicUpdate:
     type: object
-    description: "Object containing topic data update"
-    required: 
+    description: "Object containing topic data update."
+    required:
       - title
       - slug
       - description
@@ -426,26 +456,27 @@ definitions:
       - state
     properties:
       title:
-        description: "The title of a topic"
         type: string
+        description: "The title of a topic."
         example: "Business, Industry and Trade"
       slug:
-        description: "The slug of a topic"
         type: string
+        description: "The slug of a topic."
         example: "businessindustryandtrade"
       description:
-        description: "The description of a topic"
-        type: string 
-        example: "Lots of information about business"
-      release_date:
-        description: "The release date formatted to abide by RFC3339"
         type: string
+        description: "The description of a topic."
+        example: "Lots of information about business."
+      release_date:
+        type: string
+        format: date-time
+        description: "The release date formatted to abide by RFC3339."
         example: "2022-10-10T08:30:00Z"
       keywords:
         type: array
         items:
           type: string
-        description: "List of keywords that relate to the topic"
+        description: "List of keywords that relate to the topic."
       state:
         $ref: '#/definitions/State'
       subtopics_ids:
