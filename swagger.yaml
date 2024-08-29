@@ -211,7 +211,7 @@ paths:
         - $ref: '#/parameters/lang'
       responses:
         200:
-          description: "Provides a hierarchical list of navigation items with their links, copy, and localization references."
+          description: "Provides a hierarchical list of navigation items with their links, copy, and localisation references."
           schema:
             $ref: '#/definitions/Navigation'
           headers:
