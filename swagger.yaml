@@ -1,7 +1,9 @@
 swagger: "2.0"
 info:
   title: Topic API
-  description: "This service is used to retrieve information about the topics used to categorise ONS data"
+  description: "This service is used to retrieve information about the topics used to categorise ONS data.
+  
+  Note: As of the latest update, the `@context` field has been removed from all topics endpoints to improve response performance and correct data structure."
   version: 1.0.0
   license:
     name: "Open Government Licence v3.0"
