@@ -23,11 +23,17 @@ func main() {
 		var collectionID string
 		var releaseDate string
 		fmt.Print("Enter the collection id: ")
-		fmt.Scanf("%s", &collectionID)
+		if _, err := fmt.Scanf("%s", &collectionID); err != nil {
+			fmt.Fprintf(os.Stderr, "error getting collection id")
+			os.Exit(1)
+		}
 		validateInputValue(collectionID)
 
 		fmt.Print("Enter the release date: ")
-		fmt.Scanf("%s", &releaseDate)
+		if _, err := fmt.Scanf("%s", &releaseDate); err != nil {
+			fmt.Fprintf(os.Stderr, "error getting release date")
+			os.Exit(1)
+		}
 		validateInputValue(releaseDate)
 		rd, err := convertToTime(releaseDate)
 		if err != nil {
