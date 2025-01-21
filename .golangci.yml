@@ -91,10 +91,3 @@ issues:
         - govet
       text: 'declaration of "(err|ctx)" shadows declaration at'
   new: false
-
-# golangci.com configuration
-# https://github.com/golangci/golangci/wiki/Configuration
-service:
-  golangci-lint-version: 1.53.2 # use the fixed version to not introduce new linters unexpectedly
-  prepare:
-    - echo "here I can run custom commands, but no preparation needed for this repo"
