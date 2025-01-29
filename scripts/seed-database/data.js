@@ -1,4 +1,12 @@
-const censusTopics = [
+const seedTopics = [
+  {
+    title: 'Business, industry and trade',
+    description: 'Activities of businesses and industry in the UK, including data on the production and trade of goods and services, sales by retailers, characteristics of businesses, the construction and manufacturing sectors, and international trade.',
+    subtopics: [
+      { title: 'Business', description: 'UK businesses registered for VAT and PAYE with regional breakdowns, including data on size (employment and turnover) and activity (type of industry), research and development, and business services.'},
+      { title: 'Construction industry', description: 'Construction of new buildings and repairs or alterations to existing properties in Great Britain measured by the amount charged for the work, including work by civil engineering companies.'},
+    ]
+  },
   {
     title: 'Census',
     description: 'Census',
@@ -18,8 +26,4 @@ const censusTopics = [
       { title: 'Veterans', description: 'Facts and figures to help understand the veteran population of England and Wales, including topics such as housing, education, employment and skills.' },
     ],
   },
-];
-
-function createCensusTopics(){
-  createTopLevelTopics(censusTopics);
-}
+]

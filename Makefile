@@ -27,6 +27,22 @@ build: ## Builds binary of application code and stores in bin directory as dp-to
 convey: ## Runs unit test suite and outputs results on http://127.0.0.1:8080/
 	goconvey ./...
 
+.PHONY: database-add
+database-add:
+	mongosh localhost:27017/topics ./scripts/add-topics/index.js
+
+.PHONY: database-seed
+database-seed:
+	mongosh localhost:27017/topics ./scripts/seed-database/index.js
+
+.PHONY: database-seed-dry
+database-seed-dry:
+	mongosh localhost:27017/topics ./scripts/seed-database/index.js --eval 'cfg={insert:false}'
+
+.PHONY: database-wipe
+database-wipe:
+	mongosh localhost:27017/topics ./scripts/wipe-database/index.js
+
 .PHONY: debug
 debug: ## Used to run code locally in debug mode
 	go build -tags 'debug' $(LDFLAGS) -o $(BINPATH)/dp-topic-api
