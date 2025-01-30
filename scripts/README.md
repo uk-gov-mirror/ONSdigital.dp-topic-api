@@ -11,3 +11,10 @@ These scripts expect to be run from the root directory of this repo - there are 
     make database-wipe # wipes the database
     make database-add # adds topics to an existing topic structure
 ```
+
+They require `mongosh` to run which you can install via brew:
+
+```sh
+brew tap mongodb/brew
+brew install mongodb-community
+```
