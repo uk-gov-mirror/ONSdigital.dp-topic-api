@@ -57,8 +57,12 @@ fmt: ## Run Go formatting on code
 	go fmt ./...
 
 .PHONY: lint
-lint: ## Used in ci to run linters against Go code
+lint: validate-specification
 	golangci-lint run ./...
+
+.PHONY: validate-specification
+validate-specification:
+	redocly lint swagger.yaml
 
 .PHONY: lint-local
 lint-local: ## Use locally to run linters against Go code
