@@ -1,9 +1,10 @@
 swagger: "2.0"
 info:
   title: Topic API
-  description: "This service is used to retrieve information about the topics used to categorise ONS data.
-  
-  Note: As of the latest update, the `@context` field has been removed from all topics endpoints to improve response performance and correct data structure."
+  description: |
+    This service is used to retrieve information about the topics used to categorise ONS data.
+    Note: As of the latest update, the `@context` field has been removed from all topics endpoints to 
+    improve response performance and correct data structure.
   version: 1.0.0
   license:
     name: "Open Government Licence v3.0"
@@ -13,7 +14,9 @@ schemes:
   - http
 tags:
   - name: "Public"
+    description: "Used for public endpoints when API is in public mode"
   - name: "Private"
+    description: "Used for private endpoints when API is in private mode"
 parameters:
   id:
     name: id
@@ -21,7 +24,6 @@ parameters:
     required: true
     description: "The ID of a topic."
     type: string
-    example: "1234"
   type:
     description: "An option to select a subset of the possible types of content returned."
     name: type
@@ -57,6 +59,7 @@ parameters:
 paths:
   /topics:
     get:
+      security: []
       tags:
         - "Public"
       summary: "Get a list of topics"
@@ -68,11 +71,14 @@ paths:
           description: "JSON object containing a list of all available root topics."
           schema:
             $ref: '#/definitions/ListOfTopics'
+        400:
+          $ref: '#/responses/BadRequest'
         500:
           $ref: '#/responses/InternalError'
 
   /topics/{id}:
     get:
+      security: []
       tags:
         - "Public"
       summary: "Get a topic by ID"
@@ -92,6 +98,8 @@ paths:
           $ref: '#/responses/InternalError'
 
     put:
+      security:
+        - Authorization: []
       tags:
         - "Private"
       summary: "Update the topic details"
@@ -113,6 +121,8 @@ paths:
 
   /topics/{id}/release-date:
     put:
+      security:
+        - Authorization: []
       tags:
         - "Private"
       summary: "Update the topic release date"
@@ -124,21 +134,22 @@ paths:
         200:
           description: "Success"
         400:
-          $ref: '#/responses/BadRequest'
-        401:
-          $ref: '#/responses/Unauthorised'
-        404:
-          description: '#/responses/NotFound'
-        400:
           description: | 
             Bad request, messages could be 1 of the following:
             * request body empty
             * invalid topic release date, must use **RFC3339** format
+        401:
+          $ref: '#/responses/Unauthorised'
+        404:
+          description: '#/responses/NotFound'
+
         500:
           $ref: '#/responses/InternalError'
 
   /topics/{id}/state/{state}:
     put:
+      security:
+        - Authorization: []
       tags:
         - "Private"
       summary: "Update the topic state"
@@ -160,6 +171,7 @@ paths:
 
   /topics/{id}/subtopics:
     get:
+      security: []
       tags:
         - "Public"
       summary: "Get a list of subtopics"
@@ -180,10 +192,11 @@ paths:
 
   /topics/{id}/content:
     get:
+      security: []
       tags:
         - "Public"
       summary: "Get a list of content"
-      description: "Get a list of different content types for the specified ID."
+      description: "Get a list of different content types for the specified ID. This is currently unused."
       parameters:
         - $ref: '#/parameters/id'
         - $ref: '#/parameters/type'
@@ -203,10 +216,11 @@ paths:
 
   /navigation:
     get:
+      security: []
       tags:
         - "Public"
       summary: "Get a list for navigation"
-      description: "Get a list of topics for site navigation"
+      description: "Get a list of topics for site navigation. This is currently unused."
       produces:
         - "application/json"
       parameters:
@@ -221,6 +235,8 @@ paths:
               default: "public, max-age=1800"
               type: string
               description: "Caching information for the response."
+        400:
+          $ref: '#/responses/BadRequest'
         500:
           $ref: '#/responses/InternalError'
 responses:
@@ -315,10 +331,6 @@ definitions:
     type: object
     description: "A list of content items."
     properties:
-      context:
-        type: string
-        description: "The URL to the context file."
-        example: "https://cdn.ons.gov.uk/assets/json-ld/context.json"
       count:
         $ref: '#/definitions/Count'
       items:
@@ -336,20 +348,10 @@ definitions:
     type: object
     description: "A list of topics."
     properties:
-      context:
-        type: string
-        description: "The URL to the context file."
-        example: "https://cdn.ons.gov.uk/assets/json-ld/context.json"
-      count:
-        $ref: '#/definitions/Count'
       items:
         type: array
         items:
           $ref: '#/definitions/Topic'
-      limit:
-        $ref: '#/definitions/Limit'
-      offset_index:
-        $ref: '#/definitions/Offset'
       total_count:
         $ref: '#/definitions/TotalCount'
 
@@ -397,29 +399,31 @@ definitions:
   Offset:
     type: integer
     description: "The offset applied to the number of results returned"
+
   Description:
     type: string
     description: "A human-readable description as a string"
+
   Name:
     type: string
     description: "A hyphenated reference to the item"
+
   Label:
     type: string
     description: "The label to be displayed to a user, translated based on the lang parameter"
+
   Title:
     type: string
     description: "A string containing the title of something"
+
   Uri:
     type: string
     description: "The path to the resource on the web domain"
+
   Navigation:
     type: object
     description: "Resource describing the structure for the ONS website navbar."
     properties:
-      context:
-        description: "The URL to the context file"
-        type: string
-        example: "https://cdn.ons.gov.uk/assets/json-ld/context.json"
       description:
         description: "A description of the navigation"
         type: string
@@ -437,6 +441,7 @@ definitions:
               href:
                 type: string
                 description: "The URL to the resource"
+
   TopicRelease:
     type: object
     description: "Object containing topic release details."
@@ -486,6 +491,7 @@ definitions:
         items:
           type: string
         description: "Array of subtopic ids"
+
   ListOfNavigationItems:
     type: array
     description: "A list of navigation items"
@@ -532,3 +538,10 @@ definitions:
           $ref: '#/definitions/Title'
         uri:
           $ref: '#/definitions/Uri'
+
+securityDefinitions:
+  Authorization:
+    name: Authorization
+    description: "Access token used by Auth service in a Bearer format"
+    in: header
+    type: apiKey
