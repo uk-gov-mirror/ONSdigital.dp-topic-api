@@ -10,18 +10,12 @@ import (
 
 // PrivateSubtopics used for returning both Next and Current document(s) in REST API response
 type PrivateSubtopics struct {
-	Count        int              `bson:"count,omitempty"        json:"count"`
-	Limit        int              `bson:"limit,omitempty"        json:"limit"`
-	Offset       int              `bson:"offset_index,omitempty" json:"offset_index"`
 	TotalCount   int              `bson:"total_count,omitempty"  json:"total_count"`
 	PrivateItems *[]TopicResponse `bson:"items,omitempty"        json:"items"`
 }
 
 // PublicSubtopics used for returning just the Current document(s) in REST API response
 type PublicSubtopics struct {
-	Count       int      `bson:"count,omitempty"        json:"count"`
-	Limit       int      `bson:"limit,omitempty"        json:"limit"`
-	Offset      int      `bson:"offset_index,omitempty" json:"offset_index"`
 	TotalCount  int      `bson:"total_count,omitempty"  json:"total_count"`
 	PublicItems *[]Topic `bson:"items,omitempty"        json:"items"`
 }

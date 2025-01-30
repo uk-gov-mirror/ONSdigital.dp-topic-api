@@ -16,9 +16,6 @@ import (
 
 var (
 	testPrivateTopics = models.PrivateSubtopics{
-		Count:        2,
-		Offset:       0,
-		Limit:        100,
 		TotalCount:   2,
 		PrivateItems: &[]models.TopicResponse{testPrivateTopic1, testPrivateTopic2},
 	}

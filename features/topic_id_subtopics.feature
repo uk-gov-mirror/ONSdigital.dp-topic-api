@@ -55,9 +55,6 @@ Feature: Behaviour of application when doing the GET /topics/{id}/subtopics endp
         And I should receive the following JSON response:
             """
             {
-                "count": 0,
-                "offset_index": 0,
-                "limit": 0,
                 "total_count": 2,
                 "items": [
                     {
@@ -83,9 +80,6 @@ Feature: Behaviour of application when doing the GET /topics/{id}/subtopics endp
         And I should receive the following JSON response:
             """
             {
-                "count": 0,
-                "offset_index": 0,
-                "limit": 0,
                 "total_count": 2,
                 "items": [
                 {

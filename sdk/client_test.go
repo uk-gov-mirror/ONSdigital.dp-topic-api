@@ -27,9 +27,6 @@ var (
 	initialTestState = healthcheck.CreateCheckState(service)
 
 	testPublicTopics = models.PublicSubtopics{
-		Count:       2,
-		Offset:      0,
-		Limit:       100,
 		TotalCount:  2,
 		PublicItems: &[]models.Topic{testPublicTopic1, testPublicTopic2},
 	}
