@@ -13,6 +13,12 @@ Enables greater flexibility in creating journeys through the website
 * Once you have a working mongo db instance, you will want to populate your database with topics - see `./db/README.md` for an example approach that adds census topics
 * No further dependencies other than those defined in `go.mod`
 
+To run make validate-specification you require Node v20.x and to install @redocly/cli:
+
+```sh
+   npm install -g @redocly/cli
+```
+
 ### Configuration
 
 | Environment variable         | Default                                           | Description
