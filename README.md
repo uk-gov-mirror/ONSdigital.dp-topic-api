@@ -1,16 +1,15 @@
-dp-topic-api
-================
+# dp-topic-api
 
 Enables greater flexibility in creating journeys through the website
 
-### Getting started
+## Getting started
 
 * Run `make debug`
 
 ### Dependencies
 
 * Mongo db (can use [dp-compose](https://github.com/ONSdigital/dp-compose) to stand up an instance in docker container, this requires docker)
-* Once you have a working mongo db instance, you will want to populate your database with topics - see `./db/README.md` for an example approach that adds census topics
+* Once you have a working mongo db instance, you will want to populate your database with topics - see `./scripts/README.md` for seeding scripts
 * No further dependencies other than those defined in `go.mod`
 
 To run make validate-specification you require Node v20.x and to install @redocly/cli:
@@ -41,19 +40,19 @@ To run make validate-specification you require Node v20.x and to install @redocl
 | ENABLE_PRIVATE_ENDPOINTS     | false                                             | Enable private endpoints for the API
 | ENABLE_PERMISSIONS_AUTHZ     | false                                             | Enable/disable user/service permissions checking for private endpoints
 
-### Environments
+## Environments
 
 Any data issues in any of the ONS environments, please visit [dp-operations](https://github.com/ONSdigital/dp-operations) repository for guides
 
-- [Updating Release Date and Publishing Topic Guide](https://github.com/ONSdigital/dp-operations/blob/main/data-fixes/update-topic-release-date.md#update-topic-release-date)
-- [Update Topic slug](https://github.com/ONSdigital/dp-operations/blob/main/data-fixes/add-slug-to-topics.md)
+* [Updating Release Date and Publishing Topic Guide](https://github.com/ONSdigital/dp-operations/blob/main/data-fixes/update-topic-release-date.md#update-topic-release-date)
+* [Update Topic slug](https://github.com/ONSdigital/dp-operations/blob/main/data-fixes/add-slug-to-topics.md)
 
-### Contributing
+## Contributing
 
 See [CONTRIBUTING](CONTRIBUTING.md) for details.
 
-### License
+## License
 
-Copyright © 2022, Office for National Statistics (https://www.ons.gov.uk)
+Copyright © 2025, Office for National Statistics <https://www.ons.gov.uk>
 
 Released under MIT license, see [LICENSE](LICENSE.md) for details.
