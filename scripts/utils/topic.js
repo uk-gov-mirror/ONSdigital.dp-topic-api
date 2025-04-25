@@ -2,12 +2,12 @@ load("./scripts/utils/db.js");
 load("./scripts/utils/content.js");
 
 /**
- * Adds a subtopic to the subtopic_ids array of a topic. 
+ * Adds a subtopic to the subtopic_ids array of a topic.
  * @param {string} topicId - The id of the topic to update. This is not the mongo _id
  * @param {string} subtopicId - The id of the subtopic to add. This is not the mongo _id
  */
 function addSubtopic(topicId, subtopicId) {
-  const parentTopic = findTopicByID(topicId)
+  const parentTopic = findTopicByID(topicId);
 
   if (!parentTopic) {
     console.error(
@@ -16,16 +16,16 @@ function addSubtopic(topicId, subtopicId) {
     return;
   }
 
-  console.log(`Updating parent topic id ${topicId} with subtopics`)
+  console.log(`Updating parent topic id ${topicId} with subtopics`);
 
   parentTopic.next.subtopics_ids.push(subtopicId);
   parentTopic.current.subtopics_ids.push(subtopicId);
 
-  updateTopic(topicId, parentTopic)
+  updateTopic(topicId, parentTopic);
 }
 
 /**
- * Create a topic from a set of data 
+ * Create a topic from a set of data
  * @param {string} parentID - The id of the topic to update. This is not the mongo _id
  * @param {object} topicData - The topic data object - attributes: title, description, subtopics (which are then topic data objects)
  * @param {string} topicID - The id of the topic to add. This is not the mongo _id
@@ -46,8 +46,8 @@ function createTopic(parentID, topicData, topicID) {
   if (hasSubtopics) {
     console.log(`creating subtopics for topicID ${topicID}`);
 
-    topicData.subtopics.forEach((subtopic) => {
-      const subtopicID = generateUnusedID();
+    topicData.subtopics.forEach((subtopic, index) => {
+      const subtopicID = `${topicID}-sub-${index}`;
       topic.current.subtopics_ids.push(subtopicID);
       topic.next.subtopics_ids.push(subtopicID);
       createTopic(topic.id, subtopic, subtopicID);
@@ -122,7 +122,6 @@ function generateTopic(title, description, id, hasSubtopics) {
   return topic;
 }
 
-
 /**
  * Inserts a topic document into mongodb
  * @param {object} topic - The topic document to insert
@@ -151,7 +150,7 @@ function insertTopic(topic) {
  * Updates a topic document in mongodb
  * @param {string} topicID - The topic ID to update. This is not the mongo _id
  * @param {object} newTopic - The new topic document.
- * 
+ *
  */
 function updateTopic(topicID, newTopic) {
   console.log(`updating topic with id ${topicID}`);
