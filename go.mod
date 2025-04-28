@@ -8,7 +8,7 @@ require (
 	github.com/ONSdigital/dp-component-test v0.20.0
 	github.com/ONSdigital/dp-healthcheck v1.6.4
 	github.com/ONSdigital/dp-mongodb/v3 v3.8.0
-	github.com/ONSdigital/dp-net/v2 v2.11.2
+	github.com/ONSdigital/dp-net/v3 v3.3.0
 	github.com/ONSdigital/log.go/v2 v2.4.5
 	github.com/cucumber/godog v0.15.0
 	github.com/gofrs/uuid v4.4.0+incompatible
@@ -23,7 +23,6 @@ require (
 
 require (
 	github.com/ONSdigital/dp-mongodb-in-memory v1.8.1 // indirect
-	github.com/ONSdigital/dp-net/v3 v3.3.0 // indirect
 	github.com/chromedp/cdproto v0.0.0-20241022234722-4d5d5faf59fb // indirect
 	github.com/chromedp/chromedp v0.11.1 // indirect
 	github.com/chromedp/sysutil v1.1.0 // indirect

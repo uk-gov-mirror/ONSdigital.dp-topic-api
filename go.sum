@@ -12,8 +12,6 @@ github.com/ONSdigital/dp-mongodb-in-memory v1.8.1 h1:yCz6BfjA0bvesA0JjyBIA6nsOzN
 github.com/ONSdigital/dp-mongodb-in-memory v1.8.1/go.mod h1:YyTE7QBdV+Fzz5vGnmcPI1nVGCkMcaqsO4TCUlRe6Pc=
 github.com/ONSdigital/dp-mongodb/v3 v3.8.0 h1:9mHKePAdg0BLelHtGG1cGRlY78c7kSDB62lEXR2Cor8=
 github.com/ONSdigital/dp-mongodb/v3 v3.8.0/go.mod h1:x/YvepJ5/s05iKxWJNhkqGsncV130Bo4G/AwLTwesh4=
-github.com/ONSdigital/dp-net/v2 v2.11.2 h1:S5WfcXHva1V8ZkVLS7ZhsvQjf3PPCkCM++NdGifV/uM=
-github.com/ONSdigital/dp-net/v2 v2.11.2/go.mod h1:yZ0lIzM4WfIr6Ujl1lpkCsPHay0n/VQfZJUZjlYB8MY=
 github.com/ONSdigital/dp-net/v3 v3.3.0 h1:NAH9z+nvbJxoK6OnDpOyJJ+52dqBhVtaugk5bqEDt0Y=
 github.com/ONSdigital/dp-net/v3 v3.3.0/go.mod h1:ur4LLCvd2xW2jpa785pElE6HB2bPvszZxdAjqv0XFGg=
 github.com/ONSdigital/log.go/v2 v2.4.5 h1:LclSJUNHgbhgl386daHXNX9j3LOwXd/AeuiSSfEuclM=

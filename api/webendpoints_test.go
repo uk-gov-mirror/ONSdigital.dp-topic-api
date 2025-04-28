@@ -8,7 +8,7 @@ import (
 	"sync"
 	"testing"
 
-	dprequest "github.com/ONSdigital/dp-net/v2/request"
+	dprequest "github.com/ONSdigital/dp-net/v3/request"
 	"github.com/ONSdigital/dp-topic-api/config"
 	storetest "github.com/ONSdigital/dp-topic-api/store/mock"
 

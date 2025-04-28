@@ -8,8 +8,8 @@ import (
 	"github.com/ONSdigital/dp-authorisation/auth"
 	"github.com/justinas/alice"
 
-	dphandlers "github.com/ONSdigital/dp-net/v2/handlers"
-	dphttp "github.com/ONSdigital/dp-net/v2/http"
+	dphandlers "github.com/ONSdigital/dp-net/v3/handlers"
+	dphttp "github.com/ONSdigital/dp-net/v3/http"
 	"github.com/ONSdigital/dp-topic-api/api"
 	"github.com/ONSdigital/dp-topic-api/config"
 	"github.com/ONSdigital/dp-topic-api/store"
