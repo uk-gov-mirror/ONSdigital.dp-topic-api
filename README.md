@@ -13,7 +13,7 @@ The follow dependencies can all be met by running the Auth stack and then loggin
 * Mongo db
 * Florence authentication (AWS cognito)
 
-NB. Use [the auth stack in dp-compose](https://github.com/ONSdigital/dp-compose/v2/stacks/auth) to run these services in docker containers; this requires Docker and Colima.
+NB. Use [the auth stack in dp-compose](https://github.com/ONSdigital/dp-compose/v2/stacks/auth) to run these services in Docker containers.
 
 * Once you have a working mongo db instance, you will want to populate your database with topics - see `./scripts/README.md` for seeding scripts
 * No further dependencies other than those defined in `go.mod`
