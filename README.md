@@ -8,17 +8,19 @@ Enables greater flexibility in creating journeys through the website
 
 ### Dependencies
 
-The follow dependencies can all be met by running the Auth stack and then logging into your local Florence using your sandbox Florence credentials:
-* Zebedee
-* Mongo db
-* Florence authentication (AWS cognito)
+To run the Topic API locally requires the following:
 
-NB. Use [the auth stack in dp-compose](https://github.com/ONSdigital/dp-compose/tree/main/v2/stacks/auth#auth-stack) to run these services, and the other Auth services, in local Docker containers.
-
+* Mongo db (you can use [dp-compose](https://github.com/ONSdigital/dp-compose) to stand up an instance in a local Docker container)
 * Once you have a working mongo db instance, you will want to populate your database with topics - see `./scripts/README.md` for seeding scripts
-* No further dependencies other than those defined in `go.mod`
+* No further dependencies other than those defined in `go.mod`. However, although by default the Topic API has the ENABLE_PRIVATE_ENDPOINTS environment variable set to false, note that it is commonly set to true locally (in the .zshrc - for use in the dp-compose stacks) so it may need to be explicitly set to false:
 
-To run make validate-specification you require Node v20.x and to install @redocly/cli:
+```shell
+ENABLE_PRIVATE_ENDPOINTS=false
+```
+or otherwise AWS Cognito authorisation will be needed, as follows: 
+Run the [the auth stack in dp-compose](https://github.com/ONSdigital/dp-compose/tree/main/v2/stacks/auth#auth-stack) and then log into your local Florence using your sandbox Florence credentials.
+
+To run `make validate-specification`, which can be used to validate the swagger spec, you require Node v20.x and to install @redocly/cli:
 
 ```sh
    npm install -g @redocly/cli
