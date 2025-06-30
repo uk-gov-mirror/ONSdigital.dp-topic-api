@@ -42,9 +42,10 @@ type Topic struct {
 	Links       *TopicLinks `bson:"links,omitempty"          json:"links,omitempty"`
 	ReleaseDate *time.Time  `bson:"release_date,omitempty"   json:"release_date,omitempty"`
 	State       string      `bson:"state,omitempty"          json:"state,omitempty"`
-	SubtopicIds *[]string   `bson:"subtopics_ids,omitempty"  json:"subtopics_ids,omitempty"`
-	Title       string      `bson:"title,omitempty"          json:"title,omitempty"`
-	Slug        string      `bson:"slug,omitempty"           json:"slug,omitempty"`
+	//nolint:revive // This will be a breaking change TODO: fix this at the next major version.
+	SubtopicIds *[]string `bson:"subtopics_ids,omitempty"  json:"subtopics_ids,omitempty"`
+	Title       string    `bson:"title,omitempty"          json:"title,omitempty"`
+	Slug        string    `bson:"slug,omitempty"           json:"slug,omitempty"`
 }
 
 // TopicUpdate represents the incoming request structure containing a topic update
@@ -53,6 +54,7 @@ type TopicUpdate struct {
 	Keywords    *[]string `bson:"keywords,omitempty"       json:"keywords,omitempty"`
 	ReleaseDate string    `bson:"release_date"             json:"release_date"`
 	State       string    `bson:"state"                    json:"state"`
+	//nolint:revive // This will be a breaking change TODO: fix this at the next major version.
 	SubtopicIds *[]string `bson:"subtopics_ids,omitempty"  json:"subtopics_ids,omitempty"`
 	Title       string    `bson:"title"                    json:"title"`
 	Slug        string    `bson:"slug"                     json:"slug"`

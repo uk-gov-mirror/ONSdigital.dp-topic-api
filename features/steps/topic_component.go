@@ -51,7 +51,7 @@ func NewTopicComponent(mongoURL, zebedeeURL string) (*TopicComponent, error) {
 	// The following is to reset the Username and Password that have been set is Config from the previous
 	// config.Get()
 	f.Config.Username, f.Config.Password = "", ""
-	f.Config.MongoConfig.Username, f.Config.MongoConfig.Password = createCredsInDB(&f.Config.MongoConfig)
+	f.Config.Username, f.Config.Password = createCredsInDB(&f.Config.MongoConfig)
 
 	f.MongoClient, err = mongo.NewDBConnection(context.TODO(), f.Config.MongoConfig)
 	if err != nil {
