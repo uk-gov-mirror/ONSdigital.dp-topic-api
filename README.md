@@ -17,12 +17,27 @@ To run the Topic API locally requires the following:
 ```shell
 export ENABLE_PRIVATE_ENDPOINTS=false
 ```
+
 Otherwise, AWS Cognito authorisation will be needed, e.g. run [the auth stack in dp-compose](https://github.com/ONSdigital/dp-compose/tree/main/v2/stacks/auth#auth-stack) and then log into your local Florence using your sandbox Florence credentials.
+
+### Tools
+
+To run some of our tests you will need additional tooling:
+
+#### Audit
+
+We use `dis-vulncheck` to do auditing, which you will [need to install](https://github.com/ONSdigital/dis-vulncheck).
+
+#### Linting
+
+We use v2 of golangci-lint, which you will [need to install](https://golangci-lint.run/docs/welcome/install).
+
+#### Validating Specification
 
 To run `make validate-specification`, which can be used to validate the swagger spec, you require Node v20.x and to install @redocly/cli:
 
-```sh
-   npm install -g @redocly/cli
+```shell
+npm install -g @redocly/cli
 ```
 
 ### Configuration
